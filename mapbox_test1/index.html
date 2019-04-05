@@ -1,0 +1,215 @@
+<html>
+<head>
+<meta charset=utf-8 />
+<title>A simple map</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+<script src='geometry/geojson.min.js'></script>
+<link href="https://fonts.googleapis.com/css?family=Assistant:400,800|Vesper+Libre" rel="stylesheet"> 
+
+<style>
+    body { 
+        margin:0; 
+        padding:0; 
+        overflow-y:scroll;
+        font-family: 'Assistant', 
+        sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Vesper Libre', serif;
+        background:white;
+        padding:0 20px;
+    }
+    p {
+        background:white;
+        padding:20px;
+    }
+    #title {
+        font-size:72px;
+        line-height:1;
+        padding-top:20px;   
+        background: rgba(255,255,255,0.5);
+        border:2px solid white;
+    }
+
+    #map { 
+        position:fixed; 
+        top:0; bottom:0; 
+        width:100%; 
+        height:100%;
+        z-index:500;
+        transition:250ms all;
+    }
+    #scrolling-container {
+      z-index:550;
+      width:30%;
+      margin:20% 0 10% 10%;
+      height:500%;
+      position: relative;
+    }
+    .long-break {
+        height:50vh;
+    }
+    .short-break {
+        height:25vh;
+    }
+    
+</style>
+</head>
+<body>
+    <div id='map'></div>
+    <div id='scrolling-container'>
+            <div class="short-break"></div>
+            <h1 id="title">Today You,<br>Tomorrow Me.</h1>
+            <div class="long-break"></div>
+            <h1 id="marker1">Vulnerable Endangered Species</h1>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sapien augue, euismod a eleifend non, facilisis at nunc. Mauris sodales pellentesque leo nec facilisis. Mauris tincidunt tempus erat, at eleifend est rhoncus sit amet. Fusce non est vitae urna fringilla vulputate vulputate sit amet lorem. Vivamus et est sagittis magna pulvinar varius. Donec in turpis turpis. Aenean feugiat luctus mauris, vitae volutpat nibh vehicula ut. Sed malesuada lorem a dignissim hendrerit. In hac habitasse platea dictumst. Nam pulvinar ullamcorper velit interdum aliquet. Vestibulum interdum ultricies fringilla. Maecenas ac velit mattis, hendrerit massa ut, faucibus felis. </p>
+                <div class="short-break"></div>
+                <h1 id="marker2">Zoom to Lousiana</h1>
+                <div class="long-break"></div>
+                <h1 id="marker3">Slow Zoom Along Coast</h1>
+    </div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiZGhhbHBlcm4iLCJhIjoiY2pvMnliandsMHJsbTNwcGhlNWhqYzF3ZyJ9.g5FiNV9s5DXPt1RaE2wNyg';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/dhalpern/cju007aoj560k1gplfbhlc9ft', // our map style
+    center: [-90.035287, 28.7778063], // gulf coast area
+    zoom: 6 // regional scale zoom
+});
+
+map.on('load', function() { // initial load of geojson TODO: move this into mapbox itself
+
+
+
+ });
+
+ map.on('load', function() {
+    map.addLayer({
+        'id':'endangered-areas',
+        'type': 'fill',
+        'source': {
+            'type': 'geojson',
+            'data': endangered_areas
+        },
+        'layout': {},
+        'paint': {
+            'fill-color': '#FF7276',
+            'fill-opacity': 0
+        }
+    })
+// Insert the layer beneath any symbol layer.
+    var layers = map.getStyle().layers;
+    
+    var labelLayerId;
+    for (var i = 0; i < layers.length; i++) {
+        if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+            labelLayerId = layers[i].id;
+            break;
+        }
+    }
+    
+    map.addLayer({
+    'id': '3d-buildings',
+    'source': 'composite',
+    'source-layer': 'building',
+    'filter': ['==', 'extrude', 'true'],
+    'type': 'fill-extrusion',
+    'minzoom': 10,
+    'paint': {
+    'fill-extrusion-color': '#aaa',
+    
+    // use an 'interpolate' expression to add a smooth transition effect to the
+    // buildings as the user zooms in
+    'fill-extrusion-height': [
+    "interpolate", ["linear"], ["zoom"],
+    15, 0,
+    15.05, ["get", "height"]
+    ],
+    'fill-extrusion-base': [
+    "interpolate", ["linear"], ["zoom"],
+    15, 0,
+    15.05, ["get", "min_height"]
+    ],
+    'fill-extrusion-opacity': .6
+    }
+    }, labelLayerId);
+});
+function getPosition(marker) { // gets the position roughly when the marker enters the frame
+    return ($(`#${marker}`).offset().top-760)
+}
+
+var active_layers = ['endangered-areas']; // declaration for active layers. Can also handle layers imported in mapbox
+
+function resetLayers(){ // hides all layers declared above
+    active_layers.forEach(function(layer) {
+        map.setPaintProperty(layer, 'fill-opacity', 0);
+    })
+};
+
+function hideLayer(layer){ // layer must be passed as a string in quotes
+    map.setPaintProperty(layer, 'fill-opacity', 0); // setting the CSS property of the SVG to 0, hiding it
+};
+
+function showLayer(layer){ // layer must be passed as a string in quotes
+    map.setPaintProperty(layer, 'fill-opacity', 1); // setting the CSS property of the SVG to 0, showing it
+};
+
+$(window).scroll(function() { // whenever the page scrolls
+    var height = $(window).scrollTop(); // current position
+
+    if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {  // between marker1 and marker2
+        showLayer('endangered-areas');
+    } else if ((height  > getPosition('marker2')) && (height  < getPosition('marker3'))) { // between marker2 and marker3
+        showLayer('endangered-areas');
+        map.flyTo({
+
+            // These options control the ending camera position: centered at
+            // the target, at zoom level 9, and north up.
+            center: [-89.8592559, 29.9512256],
+            zoom: 11,
+            bearing: 0,
+            
+            // These options control the flight curve, making it move
+            // slowly and zoom out almost completely before starting
+            // to pan.
+            speed: 0.4, // make the flying slow
+            curve: 1, // change the speed at which it zooms out
+            
+            // This can be any easing function: it takes a number between
+            // 0 and 1 and returns another number between 0 and 1.
+            easing: function (t) { return t; }
+            });
+
+    } else if (height > getPosition('marker3')){
+        showLayer('endangered-areas');
+        map.flyTo({
+            // These options control the ending camera position: centered at
+            // the target, at zoom level 9, and north up.
+            center: [-82.6986805, 28.1020519],
+            zoom: 7,
+            bearing: 0,
+            
+            // These options control the flight curve, making it move
+            // slowly and zoom out almost completely before starting
+            // to pan.
+            speed: 0.1, // make the flying slow
+            curve: 1, // change the speed at which it zooms out
+            
+            // This can be any easing function: it takes a number between
+            // 0 and 1 and returns another number between 0 and 1.
+            easing: function (t) { return t; }
+            });
+    } else {
+        resetLayers();
+    }
+})
+</script>
+</body>
+</html>
+
