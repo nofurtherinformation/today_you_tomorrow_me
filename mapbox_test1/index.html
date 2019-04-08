@@ -9,14 +9,14 @@
 
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
 <script src='geometry/geojson.min.js'></script>
-<link href="https://fonts.googleapis.com/css?family=Assistant:400,800|Vesper+Libre" rel="stylesheet"> 
+<link href="https://fonts.googleapis.com/css?family=Assistant:400,800|Vesper+Libre" rel="stylesheet">
 
 <style>
-    body { 
-        margin:0; 
-        padding:0; 
+    body {
+        margin:0;
+        padding:0;
         overflow-y:scroll;
-        font-family: 'Assistant', 
+        font-family: 'Assistant',
         sans-serif;
     }
     h1, h2, h3, h4, h5, h6 {
@@ -31,15 +31,15 @@
     #title {
         font-size:72px;
         line-height:1;
-        padding-top:20px;   
+        padding-top:20px;
         background: rgba(255,255,255,0.5);
         border:2px solid white;
     }
 
-    #map { 
-        position:fixed; 
-        top:0; bottom:0; 
-        width:100%; 
+    #map {
+        position:fixed;
+        top:0; bottom:0;
+        width:100%;
         height:100%;
         z-index:500;
         transition:250ms all;
@@ -57,7 +57,7 @@
     .short-break {
         height:25vh;
     }
-    
+
 </style>
 </head>
 <body>
@@ -105,7 +105,7 @@ map.on('load', function() { // initial load of geojson TODO: move this into mapb
     })
 // Insert the layer beneath any symbol layer.
     var layers = map.getStyle().layers;
-    
+
     var labelLayerId;
     for (var i = 0; i < layers.length; i++) {
         if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
@@ -113,7 +113,7 @@ map.on('load', function() { // initial load of geojson TODO: move this into mapb
             break;
         }
     }
-    
+
     map.addLayer({
     'id': '3d-buildings',
     'source': 'composite',
@@ -123,7 +123,7 @@ map.on('load', function() { // initial load of geojson TODO: move this into mapb
     'minzoom': 10,
     'paint': {
     'fill-extrusion-color': '#aaa',
-    
+
     // use an 'interpolate' expression to add a smooth transition effect to the
     // buildings as the user zooms in
     'fill-extrusion-height': [
@@ -174,13 +174,13 @@ $(window).scroll(function() { // whenever the page scrolls
             center: [-89.8592559, 29.9512256],
             zoom: 11,
             bearing: 0,
-            
+
             // These options control the flight curve, making it move
             // slowly and zoom out almost completely before starting
             // to pan.
-            speed: 0.4, // make the flying slow
+            speed: 0.6, // make the flying slow
             curve: 1, // change the speed at which it zooms out
-            
+
             // This can be any easing function: it takes a number between
             // 0 and 1 and returns another number between 0 and 1.
             easing: function (t) { return t; }
@@ -194,13 +194,13 @@ $(window).scroll(function() { // whenever the page scrolls
             center: [-82.6986805, 28.1020519],
             zoom: 7,
             bearing: 0,
-            
+
             // These options control the flight curve, making it move
             // slowly and zoom out almost completely before starting
             // to pan.
             speed: 0.1, // make the flying slow
             curve: 1, // change the speed at which it zooms out
-            
+
             // This can be any easing function: it takes a number between
             // 0 and 1 and returns another number between 0 and 1.
             easing: function (t) { return t; }
@@ -212,4 +212,3 @@ $(window).scroll(function() { // whenever the page scrolls
 </script>
 </body>
 </html>
-
