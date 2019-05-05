@@ -1,0 +1,626 @@
+<html>
+<head>
+<meta charset=utf-8 />
+<title>A simple map</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+<script src="https://gmousse.github.io/dataframe-js/dist/dataframe.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js" integrity="sha256-k9RyZhvMj2bg0fd8L3IE41t0HpTXnivMoePN/Ksq250=" crossorigin="anonymous"></script>
+
+<script src='geometry/geojson.js'></script>
+<script src='script.js'></script>
+
+<link href="https://fonts.googleapis.com/css?family=Assistant:400,800|Vesper+Libre" rel="stylesheet"> 
+
+<style>
+    body { 
+        margin:0; 
+        padding:0; 
+        overflow-y:scroll;
+        font-family: 'Assistant', 
+        sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Vesper Libre', serif;
+        padding:0 20px;
+    }
+    p {
+        padding:20px;
+    }
+    #title {
+        font-size:40px;
+        line-height:1;
+        padding-top:20px;   
+    }
+
+    #map { 
+        position:fixed; 
+        top:0; bottom:0; 
+        width:100%; 
+        height:100%;
+        z-index:500;
+        transition:250ms all;
+        pointer-events: none;
+    }
+    #scrolling-container {
+      z-index:550;
+      width:30%;
+      margin:20% 0 10% 10%;
+      height:500%;
+      position: relative;
+    }
+    .long-break {
+        height:50vh;
+    }
+    .short-break {
+        height:25vh;
+    }
+    .out_to_sea {
+        translateY:(100%);
+    }
+    .hidden{
+        display:none;
+    }
+#slr_meter {
+    position: fixed;
+    width:2vw;
+    height:90vh;
+    left:2%;
+    top:5%;
+    z-index:550;
+    overflow:hidden;
+    box-shadow:0px 0px 3px rgba(0,0,0,0.6);
+}
+#slr_meter #counter {
+    width:1.5vw;
+    height:1.5vw;
+    margin:0.25vw;
+    background-color: white;
+    border-radius:50%;
+    animation: swell 7s ease -1.25s infinite;
+    position: absolute;
+    bottom: 5%;
+    z-index: 550;
+    transition:2s bottom ease-in-out;
+}
+#counter p {
+    padding:0;
+    background:none;
+    text-align:center;
+    margin-top: 2px;
+    font-family:'Vesper Libre', sans-serif;
+    font-size:12px;
+    font-weight:bold;
+}
+.wave_filler {
+    width:100%;
+    height:0;
+    position: absolute;
+    bottom:0;
+    transition:1s height;
+    background-image: linear-gradient(#025a72, #062d37);
+}
+.wave {
+    background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/85486/wave.svg) repeat-x; 
+  position: absolute;
+  bottom: 0;
+  width: 6400px;
+  height: 300px;
+  animation: wave 20s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite;
+  transform: translate3d(0, 0, 0);
+  transition:1s all;
+  background-position-y: 100%;
+}
+
+.wave:nth-of-type(2) {
+  animation: wave 20s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -.125s infinite, swell 7s ease -1.25s infinite;
+  opacity: 1;
+}
+
+@keyframes wave {
+  0% {
+    margin-left: 0;
+  }
+  100% {
+    margin-left: -1600px;
+  }
+}
+
+@keyframes swell {
+  0%, 100% {
+    transform: translate3d(0,-25px,0);
+  }
+  50% {
+    transform: translate3d(0,5px,0);
+  }
+}
+</style>
+</head>
+<body>
+    <div id='map'></div>
+    <div id="slr_meter">
+        <div id="counter"><p>1</p></div>
+        <div class="wave_filler"></div>
+        <div class="wave"></div>
+        <div class="wave wave2"></div>
+    </div>
+    <div id='scrolling-container'>
+            <div class="short-break"></div>
+            <h1 id="title">Here Today,<br>Gone Tomorrow.</h1>
+            <div class="long-break"></div>
+            <h1 id="marker1"></h1>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sapien augue, euismod a eleifend non, facilisis at nunc. Mauris sodales pellentesque leo nec facilisis. Mauris tincidunt tempus erat, at eleifend est rhoncus sit amet. Fusce non est vitae urna fringilla vulputate vulputate sit amet lorem. Vivamus et est sagittis magna pulvinar varius. Donec in turpis turpis. Aenean feugiat luctus mauris, vitae volutpat nibh vehicula ut. Sed malesuada lorem a dignissim hendrerit. In hac habitasse platea dictumst. Nam pulvinar ullamcorper velit interdum aliquet. Vestibulum interdum ultricies fringilla. Maecenas ac velit mattis, hendrerit massa ut, faucibus felis. </p>
+                <div class="short-break"></div>
+            <h1 id="marker2">Home to birds...</h1>
+                <div class="short-break"></div>
+            <h1 id="marker3">...and fish...</h1>
+                <div class="short-break"></div>
+            <h1 id="marker4">...and invertibrates...</h1>
+                <div class="short-break"></div>
+            <h1 id="marker5">..and sea level rise.</h1>
+                <div class="short-break"></div>
+            <h1 id="marker6">2 feet...</h1>
+                <div class="long-break"></div>
+            <h1 id="marker7">...3 feet...</h1>
+                <div class="long-break"></div>
+            <h1 id="marker8">...4 feet...</h1>
+                <div class="long-break"></div>
+            <h1 id="marker9">...5 feet...</h1>
+                <div class="long-break"></div>
+            <h1 id="marker10">...6 feet...</h1>
+                <div class="long-break"></div>
+            <h1 id="marker11">...7 feet...</h1>
+                <div class="long-break"></div>
+            <h1 id="marker12">...8 feet...</h1>
+                <div class="long-break"></div>
+            <h1 id="marker13">...9 feet...</h1>
+                <div class="long-break"></div>
+            <h1 id="marker14">...10 feet...</h1>
+                <div class="long-break"></div>
+            <h1 id="marker15"></h1>
+                <div class="long-break"></div>
+    </div>
+
+<script>
+
+var slr_tiles = [
+    {'name':'slr_0', 'url':'slr_00/'},
+    {'name':'slr_1', 'url':'slr_01/'},
+    {'name':'slr_2', 'url':'slr_02/'},
+    {'name':'slr_3', 'url':'slr_03/'},
+    {'name':'slr_4', 'url':'slr_04/'},
+    {'name':'slr_5', 'url':'slr_05/'},
+    {'name':'slr_6', 'url':'slr_06/'},
+    {'name':'slr_7', 'url':'slr_07/'},
+    {'name':'slr_8', 'url':'slr_08/'},
+    {'name':'slr_9', 'url':'slr_09/'},
+    {'name':'slr_10', 'url':'slr_10/'}
+]
+mapboxgl.accessToken = 'pk.eyJ1IjoiZGhhbHBlcm4iLCJhIjoiY2pvMnliandsMHJsbTNwcGhlNWhqYzF3ZyJ9.g5FiNV9s5DXPt1RaE2wNyg';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/dhalpern/cju007aoj560k1gplfbhlc9ft', // our map style
+    center: [-91.167895, 30.179239], // gulf coast area
+    zoom: 8, // regional scale zoom
+});
+map.on('load', function() {
+    map.setPaintProperty('water', 'fill-color', '#025a72')
+    slr_tiles.forEach(function(tile){
+    // Insert the layer beneath any symbol layer.
+        map.addSource(tile.name, {
+            "type": "raster",
+                "scheme": "tms",
+                "tiles": [
+                    tile.url + '{z}/{x}/{y}.png'
+                ],
+                "tileSize": 256,
+        })
+    })
+
+    slr_tiles.forEach(function(tile){
+        map.addLayer({
+            'id': tile.name,
+            'type': 'raster',
+            'source': tile.name,
+            'layout': {
+                'visibility': 'none'
+            },
+            'maxZoom':12,
+            'minZoom':0
+        });
+    })
+
+    map.addLayer({
+        'id':'invert_env',
+        'type': 'heatmap',
+        'source': {
+            'type': 'geojson',
+            'data': invert_env
+        },
+        'layout': {
+            'visibility':'none'
+        },
+        "paint": {
+            // Increase the heatmap weight based on frequency and property magnitude
+            "heatmap-weight": [
+                "interpolate",
+                ["linear"],
+                ["get", "mag"],
+                0, 0,
+                6, 1
+            ],
+            // Increase the heatmap color weight weight by zoom level
+            // heatmap-intensity is a multiplier on top of heatmap-weight
+            "heatmap-intensity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 1,
+                9, 3
+            ],
+            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+            // Begin color ramp at 0-stop with a 0-transparancy color
+            // to create a blur-like effect.
+            "heatmap-color": [
+                "interpolate",
+                ["linear"],
+                ["heatmap-density"],
+                0, "rgba(117,107,177,0)",
+                0.1, "rgb(7,92,117)",
+                1, "rgb(255,255,255)"
+            ],
+            // Adjust the heatmap radius by zoom level
+            "heatmap-radius": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 2,
+                9, 20
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            "heatmap-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                7, 1,
+                9, 0
+            ],
+        }                
+    })
+
+    map.addLayer({
+        'id':'coast',
+        'type': 'line',
+        'source': {
+            'type': 'geojson',
+            'data': coast
+        },
+        "layout": {
+            "line-join": "round",
+            "line-cap": "round"
+        },
+        "paint": {
+            "line-color": "#efefef",
+            "line-width": 1
+        }
+    })
+    map.addLayer({
+        'id':'bird_env',
+        'type': 'heatmap',
+        'source': {
+            'type': 'geojson',
+            'data': bird_env
+        },
+        'layout': {
+            'visibility':'none'
+        },
+        "paint": {
+            // Increase the heatmap weight based on frequency and property magnitude
+            "heatmap-weight": [
+                "interpolate",
+                ["linear"],
+                ["get", "mag"],
+                0, 0,
+                6, 1
+            ],
+            // Increase the heatmap color weight weight by zoom level
+            // heatmap-intensity is a multiplier on top of heatmap-weight
+            "heatmap-intensity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 1,
+                9, 3
+            ],
+            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+            // Begin color ramp at 0-stop with a 0-transparancy color
+            // to create a blur-like effect.
+            "heatmap-color": [
+                "interpolate",
+                ["linear"],
+                ["heatmap-density"],
+                0, "rgba(117,107,177,0)",
+                0.1, "rgb(7,92,117)",
+                1, "rgb(255,255,255)"
+            ],
+            // Adjust the heatmap radius by zoom level
+            "heatmap-radius": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 2,
+                9, 20
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            "heatmap-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                7, 1,
+                9, 0
+            ],
+        }                
+    })
+    map.addLayer({
+        'id':'reptile_env',
+        'type': 'heatmap',
+        'source': {
+            'type': 'geojson',
+            'data': reptile_env
+        },
+        'layout': {
+            'visibility':'none'
+        },
+        "paint": {
+            // Increase the heatmap weight based on frequency and property magnitude
+            "heatmap-weight": [
+                "interpolate",
+                ["linear"],
+                ["get", "mag"],
+                0, 0,
+                6, 1
+            ],
+            // Increase the heatmap color weight weight by zoom level
+            // heatmap-intensity is a multiplier on top of heatmap-weight
+            "heatmap-intensity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 1,
+                9, 3
+            ],
+            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+            // Begin color ramp at 0-stop with a 0-transparancy color
+            // to create a blur-like effect.
+            "heatmap-color": [
+                "interpolate",
+                ["linear"],
+                ["heatmap-density"],
+                0, "rgba(117,107,177,0)",
+                0.1, "rgb(7,92,117)",
+                1, "rgb(255,255,255)"
+            ],
+            // Adjust the heatmap radius by zoom level
+            "heatmap-radius": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 2,
+                9, 20
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            "heatmap-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                7, 1,
+                9, 0
+            ],
+        }                
+    })
+    map.addLayer({
+        'id':'fish_env',
+        'type': 'heatmap',
+        'source': {
+            'type': 'geojson',
+            'data': fish_env
+        },
+        'layout': {
+            'visibility':'none'
+        },
+        "paint": {
+            // Increase the heatmap weight based on frequency and property magnitude
+            "heatmap-weight": [
+                "interpolate",
+                ["linear"],
+                ["get", "mag"],
+                0, 0,
+                6, 1
+            ],
+            // Increase the heatmap color weight weight by zoom level
+            // heatmap-intensity is a multiplier on top of heatmap-weight
+            "heatmap-intensity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 1,
+                9, 3
+            ],
+            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+            // Begin color ramp at 0-stop with a 0-transparancy color
+            // to create a blur-like effect.
+            "heatmap-color": [
+                "interpolate",
+                ["linear"],
+                ["heatmap-density"],
+                0, "rgba(117,107,177,0)",
+                0.1, "rgb(7,92,117)",
+                1, "rgb(255,255,255)"
+            ],
+            // Adjust the heatmap radius by zoom level
+            "heatmap-radius": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 2,
+                9, 20
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            "heatmap-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                7, 1,
+                9, 0
+            ],
+        }                
+    })
+
+
+});
+
+function getPosition(marker) { // gets the position roughly when the marker enters the frame
+    return ($(`#${marker}`).offset().top-760)
+}
+
+function hideLayer(layer){ // layer must be passed as a string in quotes
+    map.setPaintProperty(layer, 'fill-opacity', 0); // setting the CSS property of the SVG to 0, hiding it
+};
+
+function showLayer(layer){ // layer must be passed as a string in quotes
+    map.setPaintProperty(layer, 'fill-opacity', 1); // setting the CSS property of the SVG to 0, showing it
+    map.setLayoutProperty(layer, 'visibility', 'visible');
+};
+function showRasterLayer(layer){ // layer must be passed as a string in quotes
+    map.setLayoutProperty(layer, 'visibility', 'visible');
+};
+function hideRasterLayer(layer){ // layer must be passed as a string in quotes
+    map.setLayoutProperty(layer, 'visibility', 'none');
+};
+function revealLayer(layer){ // layer must be passed as a string in quotes
+    map.setPaintProperty(layer, 'fill-opacity', 1) // setting the CSS property of the SVG to 0, showing it
+    map.setPaintProperty(layer, 'fill-translate', [0,0]); // setting the CSS property of the SVG to 0, showing it
+};
+$(document).ready(function(){
+    $('#slr_meter').fadeOut();
+})
+$(window).scroll(function() { // whenever the page scrolls
+    var height = $(window).scrollTop(); // current position
+
+    if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {  // between marker1 and marker2
+        hideRasterLayer('bird_env');
+    } else if ((height  > getPosition('marker2')) && (height  < getPosition('marker3'))) { // between marker2 and marker3
+        showRasterLayer('bird_env');   
+        hideRasterLayer('fish_env');     
+    } else if ((height  > getPosition('marker3')) && (height  < getPosition('marker4'))) { // between marker2 and marker3
+        hideRasterLayer('bird_env');
+        hideRasterLayer('invert_env');
+        showRasterLayer('fish_env');
+    } else if ((height  > getPosition('marker4')) && (height  < getPosition('marker5'))) { // between marker2 and marker3
+        hideRasterLayer('fish_env');
+        showRasterLayer('invert_env');
+        hideRasterLayer('slr_1');
+
+        
+        $('#slr_meter').fadeOut();
+    } else if ((height > getPosition('marker5')) && (height  < getPosition('marker6'))) { // between marker2 and marker3
+        hideRasterLayer('invert_env');
+        showRasterLayer('slr_1');
+
+        $('#slr_meter').fadeIn();
+        $('#counter').css('bottom','5%');
+        $('#counter p').html('1');
+        $('.wave, .wave2').css('bottom','0%');
+
+    }else if ((height > getPosition('marker6')) && (height  < getPosition('marker7'))) { // between marker2 and marker3
+        showRasterLayer('slr_2');
+        hideRasterLayer('slr_3');
+
+        $('#counter p').html('2')
+        $('#counter').css('bottom','13%')
+        $('.wave, .wave2').css('bottom','10%');
+        $('.wave_filler').css('height','10%');
+
+    } else if ((height > getPosition('marker7')) && (height  < getPosition('marker8'))) { // between marker2 and marker3
+        showRasterLayer('slr_3')
+        $('#counter p').html('3')
+        $('#counter').css('bottom','21%')
+        $('.wave, .wave2').css('bottom','20%');
+        $('.wave_filler').css('height','20%');
+
+        hideRasterLayer('slr_1')
+        hideRasterLayer('slr_4')
+    } else if ((height > getPosition('marker8')) && (height  < getPosition('marker9'))) { // between marker2 and marker3
+        showRasterLayer('slr_4')
+        $('#counter p').html('4')
+        $('#counter').css('bottom','29%')
+        $('.wave, .wave2').css('bottom','30%');
+        $('.wave_filler').css('height','30%');
+
+        hideRasterLayer('slr_2')
+        hideRasterLayer('slr_5')
+    } else if ((height > getPosition('marker9')) && (height  < getPosition('marker10'))) { // between marker2 and marker3
+        showRasterLayer('slr_5')
+        $('#counter p').html('5')
+        $('#counter').css('bottom','37%')
+        $('.wave, .wave2').css('bottom','40%');
+        $('.wave_filler').css('height','40%');
+        hideRasterLayer('slr_3')
+        hideRasterLayer('slr_6')
+    } else if ((height > getPosition('marker10')) && (height  < getPosition('marker11'))) { // between marker2 and marker3
+        showRasterLayer('slr_6')
+        $('#counter p').html('6')
+        $('#counter').css('bottom','45%')
+        $('.wave, .wave2').css('bottom','50%');
+        $('.wave_filler').css('height','50%');
+        hideRasterLayer('slr_2')
+        hideRasterLayer('slr_7')
+    } else if ((height > getPosition('marker11')) && (height  < getPosition('marker12'))) { // between marker2 and marker3
+        showRasterLayer('slr_7')
+        $('#counter p').html('7')
+        $('#counter').css('bottom','56%')
+        $('.wave, .wave2').css('bottom','60%');
+        $('.wave_filler').css('height','60%');
+        hideRasterLayer('slr_5')
+        hideRasterLayer('slr_8')
+    } else if ((height > getPosition('marker12')) && (height  < getPosition('marker13'))) { // between marker2 and marker3
+        showRasterLayer('slr_8')
+        $('#counter p').html('8')
+        $('#counter').css('bottom','66%')
+        $('.wave, .wave2').css('bottom','70%');
+        $('.wave_filler').css('height','70%');
+        hideRasterLayer('slr_6')
+        hideRasterLayer('slr_9')
+    } else if ((height > getPosition('marker13')) && (height  < getPosition('marker14'))) { // between marker2 and marker3
+        showRasterLayer('slr_9')
+        $('#counter p').html('9')
+        $('#counter').css('bottom','76%')
+        $('.wave, .wave2').css('bottom','80%');
+        $('.wave_filler').css('height','80%');
+        hideRasterLayer('slr_7')
+        hideRasterLayer('slr_10')
+
+    } else if ((height > getPosition('marker14')) && (height  < getPosition('marker15'))) { // between marker2 and marker3
+        showRasterLayer('slr_10') 
+        $('#counter p').html('10')
+        $('#counter').css('bottom','86%')
+        $('.wave, .wave2').css('bottom','90%');
+        $('.wave_filler').css('height','90%');
+        hideRasterLayer('slr_8')
+
+    } else {
+        hideRasterLayer('slr_10')
+        hideRasterLayer('slr_9')
+    }
+})
+
+const DataFrame = dfjs.DataFrame;
+
+</script>
+</body>
+</html>
+

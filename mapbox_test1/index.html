@@ -8,6 +8,7 @@
 <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.1/mapbox-gl.css' rel='stylesheet' />
 
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+<<<<<<< HEAD
 <script src="https://gmousse.github.io/dataframe-js/dist/dataframe.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js" integrity="sha256-k9RyZhvMj2bg0fd8L3IE41t0HpTXnivMoePN/Ksq250=" crossorigin="anonymous"></script>
 
@@ -15,13 +16,17 @@
 <script src='script.js'></script>
 
 <link href="https://fonts.googleapis.com/css?family=Assistant:400,800|Vesper+Libre" rel="stylesheet"> 
+=======
+<script src='geometry/geojson.min.js'></script>
+<link href="https://fonts.googleapis.com/css?family=Assistant:400,800|Vesper+Libre" rel="stylesheet">
+>>>>>>> f61fa130595b7960e6bfc7c4154ea6b1543855f2
 
 <style>
-    body { 
-        margin:0; 
-        padding:0; 
+    body {
+        margin:0;
+        padding:0;
         overflow-y:scroll;
-        font-family: 'Assistant', 
+        font-family: 'Assistant',
         sans-serif;
     }
     h1, h2, h3, h4, h5, h6 {
@@ -36,15 +41,15 @@
     #title {
         font-size:40px;
         line-height:1;
-        padding-top:20px;   
+        padding-top:20px;
         background: rgba(255,255,255,0.5);
         border:2px solid white;
     }
 
-    #map { 
-        position:fixed; 
-        top:0; bottom:0; 
-        width:100%; 
+    #map {
+        position:fixed;
+        top:0; bottom:0;
+        width:100%;
         height:100%;
         z-index:500;
         transition:250ms all;
@@ -62,7 +67,7 @@
     .short-break {
         height:25vh;
     }
-    
+
 </style>
 </head>
 <body>
@@ -142,6 +147,7 @@ map.on('load', function() { // initial load of geojson TODO: move this into mapb
             'fill-opacity': 0
         }
     })
+<<<<<<< HEAD
     map.addLayer({
         'id':'bird_env',
         'type': 'fill',
@@ -196,6 +202,44 @@ map.on('load', function() { // initial load of geojson TODO: move this into mapb
     })
 
 
+=======
+// Insert the layer beneath any symbol layer.
+    var layers = map.getStyle().layers;
+
+    var labelLayerId;
+    for (var i = 0; i < layers.length; i++) {
+        if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+            labelLayerId = layers[i].id;
+            break;
+        }
+    }
+
+    map.addLayer({
+    'id': '3d-buildings',
+    'source': 'composite',
+    'source-layer': 'building',
+    'filter': ['==', 'extrude', 'true'],
+    'type': 'fill-extrusion',
+    'minzoom': 10,
+    'paint': {
+    'fill-extrusion-color': '#aaa',
+
+    // use an 'interpolate' expression to add a smooth transition effect to the
+    // buildings as the user zooms in
+    'fill-extrusion-height': [
+    "interpolate", ["linear"], ["zoom"],
+    15, 0,
+    15.05, ["get", "height"]
+    ],
+    'fill-extrusion-base': [
+    "interpolate", ["linear"], ["zoom"],
+    15, 0,
+    15.05, ["get", "min_height"]
+    ],
+    'fill-extrusion-opacity': .6
+    }
+    }, labelLayerId);
+>>>>>>> f61fa130595b7960e6bfc7c4154ea6b1543855f2
 });
 var active_layers = ['invert_env','slr','reptile_env','fish_env','bird_env']
 
@@ -223,6 +267,7 @@ $(window).scroll(function() { // whenever the page scrolls
     if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {  // between marker1 and marker2
         showLayer('slr');
     } else if ((height  > getPosition('marker2')) && (height  < getPosition('marker3'))) { // between marker2 and marker3
+<<<<<<< HEAD
         resetLayers();
         showLayer('bird_env');
     } else if ((height  > getPosition('marker3')) && (height  < getPosition('marker4'))) { // between marker2 and marker3
@@ -234,6 +279,47 @@ $(window).scroll(function() { // whenever the page scrolls
     } else if ((height  > getPosition('marker5')) && (height  < getPosition('marker6'))) { // between marker2 and marker3
         resetLayers();
         showLayer('invert_env');
+=======
+        showLayer('endangered-areas');
+        map.flyTo({
+
+            // These options control the ending camera position: centered at
+            // the target, at zoom level 9, and north up.
+            center: [-89.8592559, 29.9512256],
+            zoom: 11,
+            bearing: 0,
+
+            // These options control the flight curve, making it move
+            // slowly and zoom out almost completely before starting
+            // to pan.
+            speed: 0.6, // make the flying slow
+            curve: 1, // change the speed at which it zooms out
+
+            // This can be any easing function: it takes a number between
+            // 0 and 1 and returns another number between 0 and 1.
+            easing: function (t) { return t; }
+            });
+
+    } else if (height > getPosition('marker3')){
+        showLayer('endangered-areas');
+        map.flyTo({
+            // These options control the ending camera position: centered at
+            // the target, at zoom level 9, and north up.
+            center: [-82.6986805, 28.1020519],
+            zoom: 7,
+            bearing: 0,
+
+            // These options control the flight curve, making it move
+            // slowly and zoom out almost completely before starting
+            // to pan.
+            speed: 0.1, // make the flying slow
+            curve: 1, // change the speed at which it zooms out
+
+            // This can be any easing function: it takes a number between
+            // 0 and 1 and returns another number between 0 and 1.
+            easing: function (t) { return t; }
+            });
+>>>>>>> f61fa130595b7960e6bfc7c4154ea6b1543855f2
     } else {
         resetLayers();
     }
@@ -247,4 +333,3 @@ const bird_data = DataFrame.fromCSV("data/birds_env.csv")
 </script>
 </body>
 </html>
-
