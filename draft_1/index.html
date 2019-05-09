@@ -27,14 +27,20 @@
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Vesper Libre', serif;
         padding:0 20px;
+        background: white;
+        box-shadow:0 0 1vw rgba(0,0,0,0.2);
     }
     p {
         padding:20px;
+        background:white;
+        
+    box-shadow:0 0 1vw rgba(0,0,0,0.2);
     }
     #title {
         font-size:40px;
         line-height:1;
         padding-top:20px;   
+        background:white;
     }
 
     #map { 
@@ -44,14 +50,25 @@
         height:100%;
         z-index:500;
         transition:250ms all;
-        pointer-events: none;
+        /* pointer-events: none; */
     }
     #scrolling-container {
       z-index:550;
-      width:30%;
-      margin:20% 0 10% 10%;
-      height:500%;
+      width:30vw;
+      margin:25vh 0 10vh 15vw;
+      height:500vh;
       position: relative;
+      padding:20px;
+      text-align:center;
+    }
+    #overlay {
+        z-index:499;
+        width:100%;
+        height:100%;
+        position:fixed;
+        top:0;
+        left:0;
+        opacity:0;
     }
     .long-break {
         height:50vh;
@@ -65,16 +82,26 @@
     .hidden{
         display:none;
     }
+#left_panel {
+    width:15vw;
+    height:100vh;
+    position: fixed;
+    left:0;
+    top:0;
+    background: rgba(255,255,255,0.7);
+    z-index:550;
+    box-shadow:0 0 1vw rgba(0,0,0,0.2);
+}
 #slr_meter {
     position: fixed;
     width:2vw;
-    height:90vh;
-    left:2%;
-    top:5%;
+    height:100vh;
+    left:13vw;
+    top:0;
     z-index:550;
     overflow:hidden;
-    box-shadow:0px 0px 3px rgba(0,0,0,0.6);
 }
+
 #slr_meter #counter {
     width:1.5vw;
     height:1.5vw;
@@ -120,7 +147,38 @@
   animation: wave 20s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -.125s infinite, swell 7s ease -1.25s infinite;
   opacity: 1;
 }
+.scenarios {
+    width:100%;
+    padding:20px;
+}
+.scenarios p {
+    width:5vw;
+    margin:2px;
+    display: inline;
+    font-weight: bold;
+}
+.scenarios p:nth-of-type(1), .greenBG {
+    background:#57FF98;
+}
 
+.scenarios p:nth-of-type(1)::before {
+    content: 'optimistic: ';
+    font-weight: 200;
+}
+.scenarios p:nth-of-type(2), .yellowBG {
+    background:#FFE257;
+}
+.scenarios p:nth-of-type(2)::before {
+    content: 'intermediate: ';
+    font-weight: 200;
+}
+.scenarios p:nth-of-type(3), .redBG {
+    background:#FF5E57;
+}
+.scenarios p:nth-of-type(3)::before {
+    content: 'extreme: ';
+    font-weight: 200;
+}
 @keyframes wave {
   0% {
     margin-left: 0;
@@ -142,18 +200,20 @@
 </head>
 <body>
     <div id='map'></div>
-    <div id="slr_meter">
-        <div id="counter"><p>1</p></div>
-        <div class="wave_filler"></div>
-        <div class="wave"></div>
-        <div class="wave wave2"></div>
+    <div id='left_panel'>
+        <div id="slr_meter">
+            <div id="counter"><p>1</p></div>
+            <div class="wave_filler"></div>
+            <div class="wave"></div>
+            <div class="wave wave2"></div>
+        </div>
     </div>
     <div id='scrolling-container'>
             <div class="short-break"></div>
             <h1 id="title">Here Today,<br>Gone Tomorrow.</h1>
             <div class="long-break"></div>
             <h1 id="marker1"></h1>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sapien augue, euismod a eleifend non, facilisis at nunc. Mauris sodales pellentesque leo nec facilisis. Mauris tincidunt tempus erat, at eleifend est rhoncus sit amet. Fusce non est vitae urna fringilla vulputate vulputate sit amet lorem. Vivamus et est sagittis magna pulvinar varius. Donec in turpis turpis. Aenean feugiat luctus mauris, vitae volutpat nibh vehicula ut. Sed malesuada lorem a dignissim hendrerit. In hac habitasse platea dictumst. Nam pulvinar ullamcorper velit interdum aliquet. Vestibulum interdum ultricies fringilla. Maecenas ac velit mattis, hendrerit massa ut, faucibus felis. </p>
+                <p>Louisana's gulf coast is a site of incredible bio-diversity, natural beauty, and economic activity that relies on a stable ecosystem. The coast has been a site of recovery -- from the wake of Hurricane Katrina to numerous nearly-extinct species, some recoveries have been more complete than others.<br><br>But facing the coast is a challenge  </p>
                 <div class="short-break"></div>
             <h1 id="marker2">Home to birds...</h1>
                 <div class="short-break"></div>
@@ -162,43 +222,93 @@
             <h1 id="marker4">...and invertibrates...</h1>
                 <div class="short-break"></div>
             <h1 id="marker5">..and sea level rise.</h1>
+            <p>In the best case scenario, a one foot sea level rise won't happen until <span class="greenBG">2030</span>, but in the worst case scenario, we're there <span class="redBG">next year.</span> Somewhere in the middle puts around <span class="yellowBG">2025.</span></p>
+
                 <div class="short-break"></div>
             <h1 id="marker6">2 feet...</h1>
+            <div class="scenarios">
+                <p>2050</p>
+                <p>2035</p>
+                <p>2030</p>
+            </div>
                 <div class="long-break"></div>
             <h1 id="marker7">...3 feet...</h1>
+            <div class="scenarios">
+                <p>2080</p>
+                <p>2050</p>
+                <p>2035</p>
+            </div>
+            <div id="marker7a" class="short-break"></div>
+            <p>Here we can start to see the impact on the creatures that call the gulf coast home.</p>
                 <div class="long-break"></div>
             <h1 id="marker8">...4 feet...</h1>
+            <div class="scenarios">
+                <p>2100</p>
+                <p>2065</p>
+                <p>2050</p>
+            </div>
                 <div class="long-break"></div>
             <h1 id="marker9">...5 feet...</h1>
+            <div class="scenarios">
+                <p></p>
+                <p>2075</p>
+                <p>2060</p>
+            </div>
                 <div class="long-break"></div>
             <h1 id="marker10">...6 feet...</h1>
+            <div class="scenarios">
+                <p></p>
+                <p>2085</p>
+                <p>2065</p>
+            </div>
                 <div class="long-break"></div>
             <h1 id="marker11">...7 feet...</h1>
+            <div class="scenarios">
+                <p></p>
+                <p>2095</p>
+                <p>2075</p>
+            </div>
                 <div class="long-break"></div>
             <h1 id="marker12">...8 feet...</h1>
+            <div class="scenarios">
+                <p></p>
+                <p>2100</p>
+                <p>2080</p>
+            </div>
                 <div class="long-break"></div>
             <h1 id="marker13">...9 feet...</h1>
+            <div class="scenarios">
+                <p></p>
+                <p></p>
+                <p>2085</p>
+            </div>
                 <div class="long-break"></div>
             <h1 id="marker14">...10 feet...</h1>
+            <div class="scenarios">
+                <p></p>
+                <p></p>
+                <p>2090</p>
+            </div>
                 <div class="long-break"></div>
             <h1 id="marker15"></h1>
                 <div class="long-break"></div>
     </div>
 
+    <div id="overlay"></div>
 <script>
 
 var slr_tiles = [
-    {'name':'slr_0', 'url':'slr_00/'},
-    {'name':'slr_1', 'url':'slr_01/'},
-    {'name':'slr_2', 'url':'slr_02/'},
-    {'name':'slr_3', 'url':'slr_03/'},
-    {'name':'slr_4', 'url':'slr_04/'},
-    {'name':'slr_5', 'url':'slr_05/'},
-    {'name':'slr_6', 'url':'slr_06/'},
-    {'name':'slr_7', 'url':'slr_07/'},
-    {'name':'slr_8', 'url':'slr_08/'},
-    {'name':'slr_9', 'url':'slr_09/'},
-    {'name':'slr_10', 'url':'slr_10/'}
+    {'name':'slr_0', 'url':'http://dev.dylanhalpern.com/slr/slr_00/'},
+    {'name':'slr_1', 'url':'http://dev.dylanhalpern.com/slr/slr_01/'},
+    {'name':'slr_2', 'url':'http://dev.dylanhalpern.com/slr/slr_02/'},
+    {'name':'slr_3', 'url':'http://dev.dylanhalpern.com/slr/slr_03/'},
+    {'name':'slr_4', 'url':'http://dev.dylanhalpern.com/slr/slr_04/'},
+    {'name':'slr_5', 'url':'http://dev.dylanhalpern.com/slr/slr_05/'},
+    {'name':'slr_6', 'url':'http://dev.dylanhalpern.com/slr/slr_06/'},
+    {'name':'slr_7', 'url':'http://dev.dylanhalpern.com/slr/slr_07/'},
+    {'name':'slr_8', 'url':'http://dev.dylanhalpern.com/slr/slr_08/'},
+    {'name':'slr_9', 'url':'http://dev.dylanhalpern.com/slr/slr_09/'},
+    {'name':'slr_10', 'url':'http://dev.dylanhalpern.com/slr/slr_10/'}
 ]
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGhhbHBlcm4iLCJhIjoiY2pvMnliandsMHJsbTNwcGhlNWhqYzF3ZyJ9.g5FiNV9s5DXPt1RaE2wNyg';
 var map = new mapboxgl.Map({
@@ -291,7 +401,6 @@ map.on('load', function() {
             ],
         }                
     })
-
     map.addLayer({
         'id':'coast',
         'type': 'line',
@@ -316,7 +425,7 @@ map.on('load', function() {
             'data': bird_env
         },
         'layout': {
-            'visibility':'none'
+            'visibility': 'none'
         },
         "paint": {
             // Increase the heatmap weight based on frequency and property magnitude
@@ -361,7 +470,7 @@ map.on('load', function() {
                 ["linear"],
                 ["zoom"],
                 7, 1,
-                9, 0
+                9, 0.5
             ],
         }                
     })
@@ -551,16 +660,30 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#counter').css('bottom','21%')
         $('.wave, .wave2').css('bottom','20%');
         $('.wave_filler').css('height','20%');
-
         hideRasterLayer('slr_1')
         hideRasterLayer('slr_4')
+        if ((height > getPosition('marker7a')) && (height  < getPosition('marker8'))){
+            map.setFilter('bird_env', ['==', 'NAME', 'Piping plover']);
+            showRasterLayer('bird_env');
+            map.flyTo({
+                // These options control the ending camera position: centered at
+                // the target, at zoom level 9, and north up.
+                center: [-90.7393522,30.0464164],
+                zoom: 10,
+                bearing: 0,
+                speed: 0.2,
+                curve: 1,
+                easing: function (t) { return t; }
+                });
+        }
     } else if ((height > getPosition('marker8')) && (height  < getPosition('marker9'))) { // between marker2 and marker3
+        hideRasterLayer('bird_env');
         showRasterLayer('slr_4')
         $('#counter p').html('4')
         $('#counter').css('bottom','29%')
         $('.wave, .wave2').css('bottom','30%');
         $('.wave_filler').css('height','30%');
-
+        
         hideRasterLayer('slr_2')
         hideRasterLayer('slr_5')
     } else if ((height > getPosition('marker9')) && (height  < getPosition('marker10'))) { // between marker2 and marker3
@@ -617,8 +740,6 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_9')
     }
 })
-
-const DataFrame = dfjs.DataFrame;
 
 </script>
 </body>
