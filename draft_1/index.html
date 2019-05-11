@@ -12,7 +12,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js" integrity="sha256-k9RyZhvMj2bg0fd8L3IE41t0HpTXnivMoePN/Ksq250=" crossorigin="anonymous"></script>
 
 <script src='geometry/geojson.js'></script>
-<script src='script.js'></script>
 
 <link href="https://fonts.googleapis.com/css?family=Assistant:400,800|Vesper+Libre" rel="stylesheet"> 
 
@@ -196,11 +195,28 @@
     transform: translate3d(0,5px,0);
   }
 }
+.show {
+    width:25%;
+    display:inline;
+    margin:10px;
+    background-color:white;
+    font-weight: bold;
+    text-align: center;
+    padding:5px 20px;
+    border-radius:20px;
+    transition: 250ms all;
+    box-shadow:0 0 1vw rgba(0,0,0,0.2);
+}
+.show_active {
+    background-color: #FF5E57;
+
+}
 </style>
 </head>
 <body>
     <div id='map'></div>
     <div id='left_panel'>
+        <div id="pixel_viz"></div>
         <div id="slr_meter">
             <div id="counter"><p>1</p></div>
             <div class="wave_filler"></div>
@@ -213,85 +229,95 @@
             <h1 id="title">Here Today,<br>Gone Tomorrow.</h1>
             <div class="long-break"></div>
             <h1 id="marker1"></h1>
-                <p>Louisana's gulf coast is a site of incredible bio-diversity, natural beauty, and economic activity that relies on a stable ecosystem. The coast has been a site of recovery -- from the wake of Hurricane Katrina to numerous nearly-extinct species, some recoveries have been more complete than others.<br><br>But facing the coast is a challenge  </p>
+                <p>Louisana's gulf coast is a site of incredible bio-diversity, natural beauty, and economic activity that relies on a stable ecosystem. The coast has been a site of recovery -- from the wake of Hurricane Katrina to numerous nearly-extinct species, some recoveries have been more complete than others.</p>
+                <div class="short-break" id="marker2"></div>
+                <p>But facing the coast is a challenge from which recovery may not be possible -- sea level rise. Fueled by climate change, ever-increasing high water marks threaten the precarious biodiversity unique to the Mississippi River Delta. Louisiana's coastal region is a sensitive and critical habtiat for a variety of species, home to:</p>
+                <div id="bird_env" class="show show_active">birds</div>
+                <div id="fish_env" class="show">fish</div>
+                <div id="invert_env" class="show">invertibrates</div>
                 <div class="short-break"></div>
-            <h1 id="marker2">Home to birds...</h1>
+            <p>And all these homes are threatened by the same thing, sea level rise.</p>  
                 <div class="short-break"></div>
-            <h1 id="marker3">...and fish...</h1>
+                <p>This page illustrates how and when this sea level rise will impact animal habitat as well as people living along the coast. Each block on the left represents an animal's habitat and will fade as that animal's habitat is displaced -- hover over it to see more information.  </p>
+            <h1 id="marker3">Onward and Upward - One Foot Higher</h1>
+                <p>In the best case scenario, a one foot sea level rise won't happen until <span class="greenBG">2030</span>, but in the worst case scenario, we're there <span class="redBG">next year.</span> Somewhere in the middle puts around <span class="yellowBG">2025.</span></p>
                 <div class="short-break"></div>
-            <h1 id="marker4">...and invertibrates...</h1>
+                <p>At one foot higher, a dramatic chunk of habitat is immediately lost. Many animals may be able to shift habitats, moving inland in response. Breeding grounds, species requiring specific salinities are particularly at risk. </p>
+            <h1 id="marker4">Two Feet Rise</h1>
+                <div class="scenarios">
+                    <p>2050</p>
+                    <p>2035</p>
+                    <p>2030</p>
+                </div>
+                <p>The Piping Plover, a shorebird making its home here on the gulf coast, is one of these species. Recent counts of the species across the entire US place its numbers around 6,500. These Plovers keep the beaches clean of bugs and small crustacians, allowing for our own enjoyment of the waterfront landscape.</p>
+                <img src="https://media.giphy.com/media/3o8dpc4MgG9i3VDvDq/giphy.gif">
+                <div class="long-break"></div>            
+            <h1 id="marker5">Three Feet Rise</h1>
+                <div class="scenarios">
+                    <p>2080</p>
+                    <p>2050</p>
+                    <p>2035</p>
+                </div>
+            <p id="marker6">At three feet sea level we start to see a dramatic impact on the habitats. These areas represent the Plover's habitat.</p>
                 <div class="short-break"></div>
-            <h1 id="marker5">..and sea level rise.</h1>
-            <p>In the best case scenario, a one foot sea level rise won't happen until <span class="greenBG">2030</span>, but in the worst case scenario, we're there <span class="redBG">next year.</span> Somewhere in the middle puts around <span class="yellowBG">2025.</span></p>
-
-                <div class="short-break"></div>
-            <h1 id="marker6">2 feet...</h1>
+                <p>The number of remaining Plovers has recovered since the 1990s to their current population, but that recovery may be reversed.</p>        </p>
+            <h1 id="marker7">Four Feet Rise</h1>
+                <div class="scenarios">
+                    <p>2100</p>
+                    <p>2065</p>
+                    <p>2050</p>
+                </div>
+                <p>Here along the Mississippi River banks, as the gulf sea level rises, the plover -- alongside other species -- are forced inland to find new homes and new sources of food.</p>
+            <h1 id="marker8">Five Feet Rise</h1>
             <div class="scenarios">
-                <p>2050</p>
-                <p>2035</p>
-                <p>2030</p>
-            </div>
-                <div class="long-break"></div>
-            <h1 id="marker7">...3 feet...</h1>
-            <div class="scenarios">
-                <p>2080</p>
-                <p>2050</p>
-                <p>2035</p>
-            </div>
-            <div id="marker7a" class="short-break"></div>
-            <p>Here we can start to see the impact on the creatures that call the gulf coast home.</p>
-                <div class="long-break"></div>
-            <h1 id="marker8">...4 feet...</h1>
-            <div class="scenarios">
-                <p>2100</p>
-                <p>2065</p>
-                <p>2050</p>
-            </div>
-                <div class="long-break"></div>
-            <h1 id="marker9">...5 feet...</h1>
-            <div class="scenarios">
-                <p></p>
+                <p>????</p>
                 <p>2075</p>
                 <p>2060</p>
             </div>
                 <div class="long-break"></div>
-            <h1 id="marker10">...6 feet...</h1>
-            <div class="scenarios">
-                <p></p>
-                <p>2085</p>
-                <p>2065</p>
-            </div>
+            <h1 id="marker9">Six Feet Rise</h1>
+                <div class="scenarios">
+                    <p>????</p>
+                    <p>2085</p>
+                    <p>2065</p>
+                </div>
+                <p id="marker10">And it's not just the Piping Plover.</p>
                 <div class="long-break"></div>
-            <h1 id="marker11">...7 feet...</h1>
-            <div class="scenarios">
-                <p></p>
-                <p>2095</p>
-                <p>2075</p>
-            </div>
+                <p>Over a hundred species have now been displaced, and current models are not confident on where they will end up. </p>
+            <h1 id="marker11">Seven Feet Rise</h1>
+                <div class="scenarios">
+                    <p>????</p>
+                    <p>2095</p>
+                    <p>2075</p>
+                </div>
+                <p>The impacts on species have substantial effects on human activity, too. Even today, some shrimping locations have only recently recovered from pollution stemming from the Deepwater Horizon oil spill.
+                    Critical habitats of 5 shrimp species for the area will be displaced, meaning that the juvenile shrimps seeking algae to feed on will need to move to new marshes and sounds. These shrimp need brackish coastal areas to fully grow, and without them Lousiana's 1.3 billion dollar shrimp industry is threatened.</p>
                 <div class="long-break"></div>
-            <h1 id="marker12">...8 feet...</h1>
-            <div class="scenarios">
-                <p></p>
-                <p>2100</p>
-                <p>2080</p>
-            </div>
+            <h1 id="marker12">Eight Feet Rise</h1>
+                <div class="scenarios">
+                    <p>????</p>
+                    <p>2100</p>
+                    <p>2080</p>
+                </div>
+                <p>As we approach the edges of the current model, the human impact comes into clear focus. At 8 feet of sea level rise, projected to occur at the end of this century unless serious action is taken, XXX living there today people would be displaced in Louisana alone. Of those, XXX may sit below the povery line and hold less than an high school degree, putting them in particular danger for finding a new home. $XXX,XXX worth of today's housing real estate will be wiped out, and more potentially to follow. </p>
                 <div class="long-break"></div>
-            <h1 id="marker13">...9 feet...</h1>
-            <div class="scenarios">
-                <p></p>
-                <p></p>
-                <p>2085</p>
-            </div>
-                <div class="long-break"></div>
-            <h1 id="marker14">...10 feet...</h1>
-            <div class="scenarios">
-                <p></p>
-                <p></p>
-                <p>2090</p>
-            </div>
-                <div class="long-break"></div>
-            <h1 id="marker15"></h1>
-                <div class="long-break"></div>
+                <p>A cold comfort, but only the most extreme models extend sea level rise beyond eight feet.</p>
+            <h1 id="marker13">Nine Feet Rise</h1>
+                <div class="scenarios">
+                    <p>????</p>
+                    <p>????</p>
+                    <p>2085</p>
+                </div>
+                    <div class="long-break"></div>
+            <h1 id="marker14">Ten Feet Rise</h1>
+                <div class="scenarios">
+                    <p>????</p>
+                    <p>????</p>
+                    <p>2090</p>
+                </div>
+                <h1>Here today, gone tomorrow.</h1>
+                <p>We don't know where these animals and people will have to go. But we do know this is happening, and there are ways to slow down sea level rise. </p>
+                <h1>Call to Action.</h1>
     </div>
 
     <div id="overlay"></div>
@@ -310,13 +336,64 @@ var slr_tiles = [
     {'name':'slr_9', 'url':'http://dev.dylanhalpern.com/slr/slr_09/'},
     {'name':'slr_10', 'url':'http://dev.dylanhalpern.com/slr/slr_10/'}
 ]
+var slr_loss = [slr_1_loss,slr_2_loss,slr_3_loss,slr_4_loss,slr_5_loss,slr_6_loss,slr_7_loss,slr_8_loss,slr_9_loss,slr_10_loss]
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGhhbHBlcm4iLCJhIjoiY2pvMnliandsMHJsbTNwcGhlNWhqYzF3ZyJ9.g5FiNV9s5DXPt1RaE2wNyg';
+
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/dhalpern/cju007aoj560k1gplfbhlc9ft', // our map style
     center: [-91.167895, 30.179239], // gulf coast area
     zoom: 8, // regional scale zoom
 });
+
+const heatmap_vars = {
+            // Increase the heatmap weight based on frequency and property magnitude
+            "heatmap-weight": [
+                "interpolate",
+                ["linear"],
+                ["get", "mag"],
+                0, 0,
+                6, 1
+            ],
+            // Increase the heatmap color weight weight by zoom level
+            // heatmap-intensity is a multiplier on top of heatmap-weight
+            "heatmap-intensity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 1,
+                9, 3
+            ],
+            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+            // Begin color ramp at 0-stop with a 0-transparancy color
+            // to create a blur-like effect.
+            "heatmap-color": [
+                "interpolate",
+                ["linear"],
+                ["heatmap-density"],
+                0, "rgba(117,107,177,0)",
+                0.1, "rgb(7,92,117)",
+                1, "rgb(255,255,255)"
+            ],
+            // Adjust the heatmap radius by zoom level
+            "heatmap-radius": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                0, 2,
+                9, 20
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            "heatmap-opacity": [
+                "interpolate",
+                ["linear"],
+                ["zoom"],
+                7, 1,
+                9, 1
+            ],
+        };
+
 map.on('load', function() {
     map.setPaintProperty('water', 'fill-color', '#025a72')
     slr_tiles.forEach(function(tile){
@@ -343,64 +420,6 @@ map.on('load', function() {
             'minZoom':0
         });
     })
-
-    map.addLayer({
-        'id':'invert_env',
-        'type': 'heatmap',
-        'source': {
-            'type': 'geojson',
-            'data': invert_env
-        },
-        'layout': {
-            'visibility':'none'
-        },
-        "paint": {
-            // Increase the heatmap weight based on frequency and property magnitude
-            "heatmap-weight": [
-                "interpolate",
-                ["linear"],
-                ["get", "mag"],
-                0, 0,
-                6, 1
-            ],
-            // Increase the heatmap color weight weight by zoom level
-            // heatmap-intensity is a multiplier on top of heatmap-weight
-            "heatmap-intensity": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                0, 1,
-                9, 3
-            ],
-            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
-            // Begin color ramp at 0-stop with a 0-transparancy color
-            // to create a blur-like effect.
-            "heatmap-color": [
-                "interpolate",
-                ["linear"],
-                ["heatmap-density"],
-                0, "rgba(117,107,177,0)",
-                0.1, "rgb(7,92,117)",
-                1, "rgb(255,255,255)"
-            ],
-            // Adjust the heatmap radius by zoom level
-            "heatmap-radius": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                0, 2,
-                9, 20
-            ],
-            // Transition from heatmap to circle layer by zoom level
-            "heatmap-opacity": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                7, 1,
-                9, 0
-            ],
-        }                
-    })
     map.addLayer({
         'id':'coast',
         'type': 'line',
@@ -417,6 +436,34 @@ map.on('load', function() {
             "line-width": 1
         }
     })
+    for(let i=0;i<10;++i){
+        map.addLayer({
+            'id':`slr_${i+1}_loss`,
+            'type':'heatmap',
+            'source':{
+                'type':'geojson',
+                'data':slr_loss[i],
+            },
+            'layout':{
+                'visibility':'none'
+        },
+        "paint": heatmap_vars
+        })
+    }
+
+    map.addLayer({
+        'id':'invert_env',
+        'type': 'heatmap',
+        'source': {
+            'type': 'geojson',
+            'data': invert_env
+        },
+        'layout': {
+            'visibility':'none'
+        },
+        "paint": heatmap_vars 
+    })
+
     map.addLayer({
         'id':'bird_env',
         'type': 'heatmap',
@@ -427,52 +474,7 @@ map.on('load', function() {
         'layout': {
             'visibility': 'none'
         },
-        "paint": {
-            // Increase the heatmap weight based on frequency and property magnitude
-            "heatmap-weight": [
-                "interpolate",
-                ["linear"],
-                ["get", "mag"],
-                0, 0,
-                6, 1
-            ],
-            // Increase the heatmap color weight weight by zoom level
-            // heatmap-intensity is a multiplier on top of heatmap-weight
-            "heatmap-intensity": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                0, 1,
-                9, 3
-            ],
-            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
-            // Begin color ramp at 0-stop with a 0-transparancy color
-            // to create a blur-like effect.
-            "heatmap-color": [
-                "interpolate",
-                ["linear"],
-                ["heatmap-density"],
-                0, "rgba(117,107,177,0)",
-                0.1, "rgb(7,92,117)",
-                1, "rgb(255,255,255)"
-            ],
-            // Adjust the heatmap radius by zoom level
-            "heatmap-radius": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                0, 2,
-                9, 20
-            ],
-            // Transition from heatmap to circle layer by zoom level
-            "heatmap-opacity": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                7, 1,
-                9, 0.5
-            ],
-        }                
+        "paint": heatmap_vars   
     })
     map.addLayer({
         'id':'reptile_env',
@@ -484,52 +486,7 @@ map.on('load', function() {
         'layout': {
             'visibility':'none'
         },
-        "paint": {
-            // Increase the heatmap weight based on frequency and property magnitude
-            "heatmap-weight": [
-                "interpolate",
-                ["linear"],
-                ["get", "mag"],
-                0, 0,
-                6, 1
-            ],
-            // Increase the heatmap color weight weight by zoom level
-            // heatmap-intensity is a multiplier on top of heatmap-weight
-            "heatmap-intensity": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                0, 1,
-                9, 3
-            ],
-            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
-            // Begin color ramp at 0-stop with a 0-transparancy color
-            // to create a blur-like effect.
-            "heatmap-color": [
-                "interpolate",
-                ["linear"],
-                ["heatmap-density"],
-                0, "rgba(117,107,177,0)",
-                0.1, "rgb(7,92,117)",
-                1, "rgb(255,255,255)"
-            ],
-            // Adjust the heatmap radius by zoom level
-            "heatmap-radius": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                0, 2,
-                9, 20
-            ],
-            // Transition from heatmap to circle layer by zoom level
-            "heatmap-opacity": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                7, 1,
-                9, 0
-            ],
-        }                
+        "paint": heatmap_vars               
     })
     map.addLayer({
         'id':'fish_env',
@@ -541,52 +498,7 @@ map.on('load', function() {
         'layout': {
             'visibility':'none'
         },
-        "paint": {
-            // Increase the heatmap weight based on frequency and property magnitude
-            "heatmap-weight": [
-                "interpolate",
-                ["linear"],
-                ["get", "mag"],
-                0, 0,
-                6, 1
-            ],
-            // Increase the heatmap color weight weight by zoom level
-            // heatmap-intensity is a multiplier on top of heatmap-weight
-            "heatmap-intensity": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                0, 1,
-                9, 3
-            ],
-            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
-            // Begin color ramp at 0-stop with a 0-transparancy color
-            // to create a blur-like effect.
-            "heatmap-color": [
-                "interpolate",
-                ["linear"],
-                ["heatmap-density"],
-                0, "rgba(117,107,177,0)",
-                0.1, "rgb(7,92,117)",
-                1, "rgb(255,255,255)"
-            ],
-            // Adjust the heatmap radius by zoom level
-            "heatmap-radius": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                0, 2,
-                9, 20
-            ],
-            // Transition from heatmap to circle layer by zoom level
-            "heatmap-opacity": [
-                "interpolate",
-                ["linear"],
-                ["zoom"],
-                7, 1,
-                9, 0
-            ],
-        }                
+        "paint": heatmap_vars            
     })
 
 
@@ -617,57 +529,51 @@ function revealLayer(layer){ // layer must be passed as a string in quotes
 $(document).ready(function(){
     $('#slr_meter').fadeOut();
 })
+$('.show').mouseover(function(){
+    hideRasterLayer('bird_env');
+    hideRasterLayer('invert_env');
+    hideRasterLayer('fish_env');
+    $('.show').removeClass('show_active');
+    $(this).addClass('show_active');
+    showRasterLayer(this.id);
+})
 $(window).scroll(function() { // whenever the page scrolls
     var height = $(window).scrollTop(); // current position
 
-    if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {  // between marker1 and marker2
-        hideRasterLayer('bird_env');
-    } else if ((height  > getPosition('marker2')) && (height  < getPosition('marker3'))) { // between marker2 and marker3
-        showRasterLayer('bird_env');   
-        hideRasterLayer('fish_env');     
-    } else if ((height  > getPosition('marker3')) && (height  < getPosition('marker4'))) { // between marker2 and marker3
-        hideRasterLayer('bird_env');
-        hideRasterLayer('invert_env');
-        showRasterLayer('fish_env');
-    } else if ((height  > getPosition('marker4')) && (height  < getPosition('marker5'))) { // between marker2 and marker3
-        hideRasterLayer('fish_env');
-        showRasterLayer('invert_env');
-        hideRasterLayer('slr_1');
-
-        
+    if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) { 
+    } else if ((height  > getPosition('marker2')) && (height  < getPosition('marker3'))) { 
+        showRasterLayer('bird_env');
         $('#slr_meter').fadeOut();
-    } else if ((height > getPosition('marker5')) && (height  < getPosition('marker6'))) { // between marker2 and marker3
+        hideRasterLayer('slr_1');
+    } else if ((height  > getPosition('marker3')) && (height  < getPosition('marker4'))) {
+        hideRasterLayer('bird_env');
+        hideRasterLayer('fish_env');
         hideRasterLayer('invert_env');
-        showRasterLayer('slr_1');
 
         $('#slr_meter').fadeIn();
+        showRasterLayer('slr_1');
         $('#counter').css('bottom','5%');
         $('#counter p').html('1');
         $('.wave, .wave2').css('bottom','0%');
-
-    }else if ((height > getPosition('marker6')) && (height  < getPosition('marker7'))) { // between marker2 and marker3
+    } else if ((height  > getPosition('marker4')) && (height  < getPosition('marker5'))) { 
         showRasterLayer('slr_2');
         hideRasterLayer('slr_3');
 
         $('#counter p').html('2')
         $('#counter').css('bottom','13%')
         $('.wave, .wave2').css('bottom','10%');
-        $('.wave_filler').css('height','10%');
-
-    } else if ((height > getPosition('marker7')) && (height  < getPosition('marker8'))) { // between marker2 and marker3
+        $('.wave_filler').css('height','10%');     
+ 
+    } else if ((height > getPosition('marker5')) && (height  < getPosition('marker6'))) { 
         showRasterLayer('slr_3')
         $('#counter p').html('3')
         $('#counter').css('bottom','21%')
         $('.wave, .wave2').css('bottom','20%');
         $('.wave_filler').css('height','20%');
-        hideRasterLayer('slr_1')
-        hideRasterLayer('slr_4')
-        if ((height > getPosition('marker7a')) && (height  < getPosition('marker8'))){
-            map.setFilter('bird_env', ['==', 'NAME', 'Piping plover']);
+
+        map.setFilter('bird_env', ['==', 'NAME', 'Piping plover']);
             showRasterLayer('bird_env');
             map.flyTo({
-                // These options control the ending camera position: centered at
-                // the target, at zoom level 9, and north up.
                 center: [-90.7393522,30.0464164],
                 zoom: 10,
                 bearing: 0,
@@ -675,9 +581,12 @@ $(window).scroll(function() { // whenever the page scrolls
                 curve: 1,
                 easing: function (t) { return t; }
                 });
-        }
-    } else if ((height > getPosition('marker8')) && (height  < getPosition('marker9'))) { // between marker2 and marker3
-        hideRasterLayer('bird_env');
+
+        hideRasterLayer('slr_1')
+        hideRasterLayer('slr_4')
+    } else if ((height > getPosition('marker6')) && (height  < getPosition('marker7'))) { 
+
+    } else if ((height > getPosition('marker7')) && (height  < getPosition('marker8'))) {
         showRasterLayer('slr_4')
         $('#counter p').html('4')
         $('#counter').css('bottom','29%')
@@ -686,7 +595,7 @@ $(window).scroll(function() { // whenever the page scrolls
         
         hideRasterLayer('slr_2')
         hideRasterLayer('slr_5')
-    } else if ((height > getPosition('marker9')) && (height  < getPosition('marker10'))) { // between marker2 and marker3
+    } else if ((height > getPosition('marker8')) && (height  < getPosition('marker9'))) { 
         showRasterLayer('slr_5')
         $('#counter p').html('5')
         $('#counter').css('bottom','37%')
@@ -694,7 +603,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','40%');
         hideRasterLayer('slr_3')
         hideRasterLayer('slr_6')
-    } else if ((height > getPosition('marker10')) && (height  < getPosition('marker11'))) { // between marker2 and marker3
+    } else if ((height > getPosition('marker9')) && (height  < getPosition('marker10'))) { 
         showRasterLayer('slr_6')
         $('#counter p').html('6')
         $('#counter').css('bottom','45%')
@@ -702,7 +611,19 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','50%');
         hideRasterLayer('slr_2')
         hideRasterLayer('slr_7')
-    } else if ((height > getPosition('marker11')) && (height  < getPosition('marker12'))) { // between marker2 and marker3
+        map.flyTo({
+                center: [-92.8386999,29.867172],
+                zoom: 9,
+                bearing: 0,
+                speed: 0.2,
+                curve: 1,
+                easing: function (t) { return t; }
+                });
+        showRasterLayer('slr_6_loss')
+    } else if ((height > getPosition('marker10')) && (height  < getPosition('marker11'))) { 
+
+
+    } else if ((height > getPosition('marker11')) && (height  < getPosition('marker12'))) { 
         showRasterLayer('slr_7')
         $('#counter p').html('7')
         $('#counter').css('bottom','56%')
@@ -710,7 +631,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','60%');
         hideRasterLayer('slr_5')
         hideRasterLayer('slr_8')
-    } else if ((height > getPosition('marker12')) && (height  < getPosition('marker13'))) { // between marker2 and marker3
+    } else if ((height > getPosition('marker12')) && (height  < getPosition('marker13'))) { 
         showRasterLayer('slr_8')
         $('#counter p').html('8')
         $('#counter').css('bottom','66%')
@@ -718,7 +639,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','70%');
         hideRasterLayer('slr_6')
         hideRasterLayer('slr_9')
-    } else if ((height > getPosition('marker13')) && (height  < getPosition('marker14'))) { // between marker2 and marker3
+    } else if ((height > getPosition('marker13')) && (height  < getPosition('marker14'))) { 
         showRasterLayer('slr_9')
         $('#counter p').html('9')
         $('#counter').css('bottom','76%')
@@ -727,7 +648,7 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_7')
         hideRasterLayer('slr_10')
 
-    } else if ((height > getPosition('marker14')) && (height  < getPosition('marker15'))) { // between marker2 and marker3
+    } else if (height > getPosition('marker14')) { 
         showRasterLayer('slr_10') 
         $('#counter p').html('10')
         $('#counter').css('bottom','86%')
@@ -736,8 +657,6 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_8')
 
     } else {
-        hideRasterLayer('slr_10')
-        hideRasterLayer('slr_9')
     }
 })
 
