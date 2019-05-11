@@ -214,12 +214,35 @@
 .mapboxgl-popup-content h2 {
     box-shadow:none;
 }
+#human_counter {
+    width:13vw;
+    position: fixed;
+    left:0;
+    bottom:0;
+    background:white;
+    padding:0.25vh 0.25vw;
+}
+#human_counter h3 {
+    box-shadow: none;
+    margin:0;
+    background:none;
+    font-size:10px;
+    padding:0;
+}
+#human_counter h3 span {
+    font-size:20px;
+}
 </style>
 </head>
 <body>
     <div id='map'></div>
     <div id='left_panel'>
         <div id="pixel_viz"></div>
+        <div id="human_counter">
+            <h3>Population Displaced:<br><span id="dd_0"></span></h3>
+            <h3>Housing Units Displaced:<br><span id="dd_1"></span></h3>
+            <h3>Housing Value Lost:<br>$<span id="dd_2"></span></h3>
+        </div>
         <div id="slr_meter">
             <div id="counter"><p>1</p></div>
             <div class="wave_filler"></div>
@@ -332,6 +355,16 @@
 
     <div id="overlay"></div>
 <script>
+var dd;
+const displacement_data = d3.csv('summary_human_displacement.csv').then(function(data){
+    dd = data;
+})
+
+var pixel_data;
+const px_data = d3.csv('HABITAT_LOSS_PERCENTAGES.csv').then(function(data){
+    pixel_data=data;
+})
+
 const API_KEY = "ea61f3692f37cf92a8df83f3df1d9d9d";
 var slr_tiles = [
     {'name':'slr_0', 'url':'http://dev.dylanhalpern.com/slr/slr_00/'},
@@ -573,6 +606,11 @@ function revealLayer(layer){ // layer must be passed as a string in quotes
     map.setPaintProperty(layer, 'fill-opacity', 1) // setting the CSS property of the SVG to 0, showing it
     map.setPaintProperty(layer, 'fill-translate', [0,0]); // setting the CSS property of the SVG to 0, showing it
 };
+function updateDD(slr){
+    $('#dd_0').html(parseFloat(dd[0][`${slr}`]).toFixed(0));
+    $('#dd_1').html(parseFloat(dd[1][`${slr}`]).toFixed(0));
+    $('#dd_2').html(parseFloat(dd[2][`${slr}`]).toFixed(2)+' bn');
+}
 
 function getImg(term){
   let TAGS = term.split(' ').join('+');
@@ -616,6 +654,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#counter').css('bottom','5%');
         $('#counter p').html('1');
         $('.wave, .wave2').css('bottom','0%');
+        updateDD('1');
     } else if ((height  > getPosition('marker4')) && (height  < getPosition('marker5'))) { 
         showRasterLayer('slr_2');
         hideRasterLayer('slr_3');
@@ -623,7 +662,9 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#counter p').html('2')
         $('#counter').css('bottom','13%')
         $('.wave, .wave2').css('bottom','10%');
-        $('.wave_filler').css('height','10%');     
+        $('.wave_filler').css('height','10%'); 
+        
+        updateDD('2');    
  
     } else if ((height > getPosition('marker5')) && (height  < getPosition('marker6'))) { 
         showRasterLayer('slr_3')
@@ -631,6 +672,8 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#counter').css('bottom','21%')
         $('.wave, .wave2').css('bottom','20%');
         $('.wave_filler').css('height','20%');
+        
+        updateDD('3');
 
         map.setFilter('bird_env', ['==', 'NAME', 'Piping plover']);
             showRasterLayer('bird_env');
@@ -649,6 +692,8 @@ $(window).scroll(function() { // whenever the page scrolls
 
     } else if ((height > getPosition('marker7')) && (height  < getPosition('marker8'))) {
         showRasterLayer('slr_4')
+        updateDD('4');
+
         $('#counter p').html('4')
         $('#counter').css('bottom','29%')
         $('.wave, .wave2').css('bottom','30%');
@@ -657,16 +702,20 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_2')
         hideRasterLayer('slr_5')
     } else if ((height > getPosition('marker8')) && (height  < getPosition('marker9'))) { 
-        showRasterLayer('slr_5')
-        $('#counter p').html('5')
-        $('#counter').css('bottom','37%')
+        showRasterLayer('slr_5');
+        updateDD('5');
+
+        $('#counter p').html('5');
+        $('#counter').css('bottom','37%');
         $('.wave, .wave2').css('bottom','40%');
         $('.wave_filler').css('height','40%');
-        hideRasterLayer('slr_3')
-        hideRasterLayer('slr_6')
-        hideLayer('slr_6_loss')
+        hideRasterLayer('slr_3');
+        hideRasterLayer('slr_6');
+        hideLayer('slr_6_loss');
     } else if ((height > getPosition('marker9')) && (height  < getPosition('marker10'))) { 
-        showRasterLayer('slr_6')
+        showRasterLayer('slr_6');
+        
+        updateDD('6');
         $('#counter p').html('6')
         $('#counter').css('bottom','45%')
         $('.wave, .wave2').css('bottom','50%');
@@ -691,6 +740,8 @@ $(window).scroll(function() { // whenever the page scrolls
 
     } else if ((height > getPosition('marker11')) && (height  < getPosition('marker12'))) { 
         showRasterLayer('slr_7')
+        updateDD('7');
+
         $('#counter p').html('7')
         $('#counter').css('bottom','56%')
         $('.wave, .wave2').css('bottom','60%');
@@ -698,26 +749,32 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_5')
         hideRasterLayer('slr_8')
     } else if ((height > getPosition('marker12')) && (height  < getPosition('marker13'))) { 
-        showRasterLayer('slr_8')
-        $('#counter p').html('8')
-        $('#counter').css('bottom','66%')
+        showRasterLayer('slr_8');
+        updateDD('8');
+
+        $('#counter p').html('8');
+        $('#counter').css('bottom','66%');
         $('.wave, .wave2').css('bottom','70%');
         $('.wave_filler').css('height','70%');
-        hideRasterLayer('slr_6')
-        hideRasterLayer('slr_9')
+        hideRasterLayer('slr_6');
+        hideRasterLayer('slr_9');
     } else if ((height > getPosition('marker13')) && (height  < getPosition('marker14'))) { 
-        showRasterLayer('slr_9')
-        $('#counter p').html('9')
-        $('#counter').css('bottom','76%')
+        showRasterLayer('slr_9');
+        updateDD('9');
+
+        $('#counter p').html('9');
+        $('#counter').css('bottom','76%');
         $('.wave, .wave2').css('bottom','80%');
         $('.wave_filler').css('height','80%');
         hideRasterLayer('slr_7')
         hideRasterLayer('slr_10')
 
     } else if (height > getPosition('marker14')) { 
-        showRasterLayer('slr_10') 
-        $('#counter p').html('10')
-        $('#counter').css('bottom','86%')
+        showRasterLayer('slr_10');
+        updateDD('10');
+
+        $('#counter p').html('10');
+        $('#counter').css('bottom','86%');
         $('.wave, .wave2').css('bottom','90%');
         $('.wave_filler').css('height','90%');
         hideRasterLayer('slr_8')
