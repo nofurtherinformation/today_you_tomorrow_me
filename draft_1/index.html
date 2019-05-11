@@ -210,6 +210,27 @@
 .show_active {
     background-color: #FF5E57;
 
+} 
+.mapboxgl-popup-content h2 {
+    box-shadow:none;
+}
+#human_counter {
+    width:13vw;
+    position: fixed;
+    left:0;
+    bottom:0;
+    background:white;
+    padding:0.25vh 0.25vw;
+}
+#human_counter h3 {
+    box-shadow: none;
+    margin:0;
+    background:none;
+    font-size:10px;
+    padding:0;
+}
+#human_counter h3 span {
+    font-size:20px;
 }
 </style>
 </head>
@@ -217,6 +238,13 @@
     <div id='map'></div>
     <div id='left_panel'>
         <div id="pixel_viz" style = "padding:15px"><svg id = "svg"> </svg></div>
+
+        <div id="pixel_viz"></div>
+        <div id="human_counter">
+            <h3>Population Displaced:<br><span id="dd_0"></span></h3>
+            <h3>Housing Units Displaced:<br><span id="dd_1"></span></h3>
+            <h3>Housing Value Lost:<br>$<span id="dd_2"></span></h3>
+        </div>
         <div id="slr_meter">
             <div id="counter"><p>1</p></div>
             <div class="wave_filler"></div>
@@ -239,16 +267,19 @@
             <p>And all these homes are threatened by the same thing, sea level rise.</p>  
                 <div class="short-break"></div>
                 <p>This page illustrates how and when this sea level rise will impact animal habitat as well as people living along the coast. Each block on the left represents an animal's habitat and will fade as that animal's habitat is displaced -- hover over it to see more information.  </p>
-            <h1 id="marker3">Onward and Upward - One Foot Higher</h1>
+                <div class="short-break"></div>    
+            <h1 id="marker3">One Foot Higher</h1>
                 <p>In the best case scenario, a one foot sea level rise won't happen until <span class="greenBG">2030</span>, but in the worst case scenario, we're there <span class="redBG">next year.</span> Somewhere in the middle puts around <span class="yellowBG">2025.</span></p>
                 <div class="short-break"></div>
                 <p>At one foot higher, a dramatic chunk of habitat is immediately lost. Many animals may be able to shift habitats, moving inland in response. Breeding grounds, species requiring specific salinities are particularly at risk. </p>
+                <div class="short-break"></div>
             <h1 id="marker4">Two Feet Rise</h1>
                 <div class="scenarios">
                     <p>2050</p>
                     <p>2035</p>
                     <p>2030</p>
                 </div>
+                <div class="short-break"></div>
                 <p>The Piping Plover, a shorebird making its home here on the gulf coast, is one of these species. Recent counts of the species across the entire US place its numbers around 6,500. These Plovers keep the beaches clean of bugs and small crustacians, allowing for our own enjoyment of the waterfront landscape.</p>
                 <img src="https://media.giphy.com/media/3o8dpc4MgG9i3VDvDq/giphy.gif">
                 <div class="long-break"></div>            
@@ -260,13 +291,16 @@
                 </div>
             <p id="marker6">At three feet sea level we start to see a dramatic impact on the habitats. These areas represent the Plover's habitat.</p>
                 <div class="short-break"></div>
-                <p>The number of remaining Plovers has recovered since the 1990s to their current population, but that recovery may be reversed.</p>        </p>
+                <p>The number of remaining Plovers has recovered since the 1990s to their current population, but that recovery may be reversed.</p>        
+                <div class="long-break"></div>
             <h1 id="marker7">Four Feet Rise</h1>
                 <div class="scenarios">
                     <p>2100</p>
                     <p>2065</p>
                     <p>2050</p>
                 </div>
+                
+                <div class="long-break"></div>
                 <p>Here along the Mississippi River banks, as the gulf sea level rises, the plover -- alongside other species -- are forced inland to find new homes and new sources of food.</p>
             <h1 id="marker8">Five Feet Rise</h1>
             <div class="scenarios">
@@ -284,6 +318,7 @@
                 <p id="marker10">And it's not just the Piping Plover.</p>
                 <div class="long-break"></div>
                 <p>Over a hundred species have now been displaced, and current models are not confident on where they will end up. </p>
+                <div class="short-break"></div>    
             <h1 id="marker11">Seven Feet Rise</h1>
                 <div class="scenarios">
                     <p>????</p>
@@ -322,11 +357,22 @@
 
     <div id="overlay"></div>
 <script>
+var dd;
+const displacement_data = d3.csv('summary_human_displacement.csv').then(function(data){
+    dd = data;
+})
+
+var pixel_data;
+const px_data = d3.csv('HABITAT_LOSS_PERCENTAGES.csv').then(function(data){
+    pixel_data=data;
+})
 
 var pixel_data;
 const d = d3.csv("https://gist.githubusercontent.com/kat-wicks/f205e7ccfcc730c350237b8a7d3c30fa/raw/84c1ffe852757e74df4f1d533c3097c717169fdb/slr_habitat_loss.csv",  (d, i, columns) => (d3.autoType(d))).then(function(data){
     pixel_data = data
 })
+
+const API_KEY = "ea61f3692f37cf92a8df83f3df1d9d9d";
 
 
 var slr_tiles = [
@@ -351,6 +397,7 @@ var map = new mapboxgl.Map({
     style: 'mapbox://styles/dhalpern/cju007aoj560k1gplfbhlc9ft', // our map style
     center: [-91.167895, 30.179239], // gulf coast area
     zoom: 8, // regional scale zoom
+    interactive:false
 });
 
 
@@ -388,8 +435,8 @@ const heatmap_vars = {
                 "interpolate",
                 ["linear"],
                 ["zoom"],
-                0, 2,
-                9, 20
+                0, 1,
+                8, 15 
             ],
             // Transition from heatmap to circle layer by zoom level
             "heatmap-opacity": [
@@ -397,7 +444,7 @@ const heatmap_vars = {
                 ["linear"],
                 ["zoom"],
                 7, 1,
-                9, 1
+                9, 0.75
             ],
         };
 
@@ -446,17 +493,20 @@ map.on('load', function() {
     for(let i=0;i<10;++i){
         map.addLayer({
             'id':`slr_${i+1}_loss`,
-            'type':'heatmap',
+            'type':'fill',
             'source':{
                 'type':'geojson',
                 'data':slr_loss[i],
             },
-            'layout':{
+            "layout": {
                 'visibility':'none'
         },
-        "paint": heatmap_vars
+        "paint": {
+            "fill-opacity":0,
+            "fill-color":'#FF5E57'
+            }
         })
-    }
+    };
 
     map.addLayer({
         'id':'invert_env',
@@ -508,6 +558,37 @@ map.on('load', function() {
         "paint": heatmap_vars            
     })
 
+    var popup = new mapboxgl.Popup({
+        closeButton: true,
+        closeOnClick: true
+        });
+        
+    map.on('mouseover', 'slr_6_loss', function(e) {
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+        
+        var name = e.features[0].properties.Louisian_2;
+        var la_name = e.features[0].properties.Louisian_3;
+        
+        
+        
+        
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+    popup.setLngLat(e.lngLat)
+        .setHTML(`<h2>${name}</h2><br>`)
+        .addTo(map);
+        console.log(la_name)
+        if (la_name != 'null') {
+            getImg(la_name);
+        }
+    });
+        
+    map.on('mouseleave', 'places', function() {
+        map.getCanvas().style.cursor = '';
+        map.setPaintProperty('fill-opacity', 0.75);
+        popup.remove();
+    });
 
 });
 
@@ -625,7 +706,6 @@ function grid (config) {
 }
 
 
-
 function getPosition(marker) { // gets the position roughly when the marker enters the frame
     return ($(`#${marker}`).offset().top-760)
 }
@@ -634,10 +714,11 @@ function hideLayer(layer){ // layer must be passed as a string in quotes
     map.setPaintProperty(layer, 'fill-opacity', 0); // setting the CSS property of the SVG to 0, hiding it
 };
 
-function showLayer(layer){ // layer must be passed as a string in quotes
-    map.setPaintProperty(layer, 'fill-opacity', 1); // setting the CSS property of the SVG to 0, showing it
+function showLayer(layer, opacity){ // layer must be passed as a string in quotes
+    map.setPaintProperty(layer, 'fill-opacity', opacity); // setting the CSS property of the SVG to 0, showing it
     map.setLayoutProperty(layer, 'visibility', 'visible');
 };
+
 function showRasterLayer(layer){ // layer must be passed as a string in quotes
     map.setLayoutProperty(layer, 'visibility', 'visible');
 };
@@ -648,6 +729,22 @@ function revealLayer(layer){ // layer must be passed as a string in quotes
     map.setPaintProperty(layer, 'fill-opacity', 1) // setting the CSS property of the SVG to 0, showing it
     map.setPaintProperty(layer, 'fill-translate', [0,0]); // setting the CSS property of the SVG to 0, showing it
 };
+function updateDD(slr){
+    $('#dd_0').html(parseFloat(dd[0][`${slr}`]).toFixed(0));
+    $('#dd_1').html(parseFloat(dd[1][`${slr}`]).toFixed(0));
+    $('#dd_2').html(parseFloat(dd[2][`${slr}`]).toFixed(2)+' bn');
+}
+
+function getImg(term){
+  let TAGS = term.split(' ').join('+');
+  let url = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=" + API_KEY + "&tags=" + TAGS + "&safe_search=1&per_page=200";
+  $.getJSON(url + "&format=json&jsoncallback=?", function(data){
+    let item = data.photos.photo[Math.floor(Math.random()*Object.keys(data.photos.photo).length)];           
+    let src = "http://farm"+ item.farm +".static.flickr.com/"+ item.server +"/"+ item.id +"_"+ item.secret +"_m.jpg";
+    $("<img/>").attr("src", src).appendTo(".mapboxgl-popup-content");
+  });
+};
+
 $(document).ready(function(){
     $('#slr_meter').fadeOut();
 })
@@ -663,7 +760,12 @@ $(window).scroll(function() { // whenever the page scrolls
     var height = $(window).scrollTop(); // current position
 
     if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) { 
+
         grid({init: getArray(0)});
+
+        hideRasterLayer('bird_env');
+        hideRasterLayer('fish_env');
+        hideRasterLayer('invert_env');
     } else if ((height  > getPosition('marker2')) && (height  < getPosition('marker3'))) { 
         showRasterLayer('bird_env');
         $('#slr_meter').fadeOut();
@@ -680,6 +782,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#counter').css('bottom','5%');
         $('#counter p').html('1');
         $('.wave, .wave2').css('bottom','0%');
+        updateDD('1');
     } else if ((height  > getPosition('marker4')) && (height  < getPosition('marker5'))) { 
         showRasterLayer('slr_2');
         hideRasterLayer('slr_3');
@@ -687,7 +790,9 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#counter p').html('2')
         $('#counter').css('bottom','13%')
         $('.wave, .wave2').css('bottom','10%');
-        $('.wave_filler').css('height','10%');     
+        $('.wave_filler').css('height','10%'); 
+        
+        updateDD('2');    
  
     } else if ((height > getPosition('marker5')) && (height  < getPosition('marker6'))) { 
         showRasterLayer('slr_3')
@@ -696,6 +801,8 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#counter').css('bottom','21%')
         $('.wave, .wave2').css('bottom','20%');
         $('.wave_filler').css('height','20%');
+        
+        updateDD('3');
 
         map.setFilter('bird_env', ['==', 'NAME', 'Piping plover']);
             showRasterLayer('bird_env');
@@ -714,6 +821,8 @@ $(window).scroll(function() { // whenever the page scrolls
 
     } else if ((height > getPosition('marker7')) && (height  < getPosition('marker8'))) {
         showRasterLayer('slr_4')
+        updateDD('4');
+
         $('#counter p').html('4')
 
         $('#counter').css('bottom','29%')
@@ -724,16 +833,23 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_5')
         grid({init: getArray(4)});
     } else if ((height > getPosition('marker8')) && (height  < getPosition('marker9'))) { 
-        showRasterLayer('slr_5')
-        $('#counter p').html('5')
-        $('#counter').css('bottom','37%')
+        showRasterLayer('slr_5');
+        updateDD('5');
+
+        $('#counter p').html('5');
+        $('#counter').css('bottom','37%');
         $('.wave, .wave2').css('bottom','40%');
         $('.wave_filler').css('height','40%');
         grid({init: getArray(5)});
         hideRasterLayer('slr_3')
         hideRasterLayer('slr_6')
+        hideRasterLayer('slr_3');
+        hideRasterLayer('slr_6');
+        hideLayer('slr_6_loss');
     } else if ((height > getPosition('marker9')) && (height  < getPosition('marker10'))) { 
-        showRasterLayer('slr_6')
+        showRasterLayer('slr_6');
+        
+        updateDD('6');
         $('#counter p').html('6')
         $('#counter').css('bottom','45%')
         $('.wave, .wave2').css('bottom','50%');
@@ -742,19 +858,25 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_7')
         grid({init: getArray(6)});
         map.flyTo({
-                center: [-92.8386999,29.867172],
-                zoom: 9,
+
+                center: [-91.167895, 30.179239], // gulf coast area
+                zoom: 8, // regional scale zoom 
                 bearing: 0,
-                speed: 0.2,
+                speed: 0.1,
                 curve: 1,
                 easing: function (t) { return t; }
                 });
-        showRasterLayer('slr_6_loss')
+                
+        map.setFilter('bird_env', ['==', 'ELEMENT', 'BIRD']);
+        hideRasterLayer('bird_env');
+        showLayer('slr_6_loss', 0.75);
     } else if ((height > getPosition('marker10')) && (height  < getPosition('marker11'))) { 
 
 
     } else if ((height > getPosition('marker11')) && (height  < getPosition('marker12'))) { 
         showRasterLayer('slr_7')
+        updateDD('7');
+
         $('#counter p').html('7')
         $('#counter').css('bottom','56%')
         $('.wave, .wave2').css('bottom','60%');
@@ -763,18 +885,24 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_8')
         grid({init: getArray(7)});
     } else if ((height > getPosition('marker12')) && (height  < getPosition('marker13'))) { 
-        showRasterLayer('slr_8')
-        $('#counter p').html('8')
-        $('#counter').css('bottom','66%')
+        showRasterLayer('slr_8');
+        updateDD('8');
+
+        $('#counter p').html('8');
+        $('#counter').css('bottom','66%');
         $('.wave, .wave2').css('bottom','70%');
         $('.wave_filler').css('height','70%');
         hideRasterLayer('slr_6')
         hideRasterLayer('slr_9')
         grid({init: getArray(8)});
+        hideRasterLayer('slr_6');
+        hideRasterLayer('slr_9');
     } else if ((height > getPosition('marker13')) && (height  < getPosition('marker14'))) { 
-        showRasterLayer('slr_9')
-        $('#counter p').html('9')
-        $('#counter').css('bottom','76%')
+        showRasterLayer('slr_9');
+        updateDD('9');
+
+        $('#counter p').html('9');
+        $('#counter').css('bottom','76%');
         $('.wave, .wave2').css('bottom','80%');
         $('.wave_filler').css('height','80%');
         hideRasterLayer('slr_7')
@@ -782,9 +910,11 @@ $(window).scroll(function() { // whenever the page scrolls
         grid({init: getArray(9)});
 
     } else if (height > getPosition('marker14')) { 
-        showRasterLayer('slr_10') 
-        $('#counter p').html('10')
-        $('#counter').css('bottom','86%')
+        showRasterLayer('slr_10');
+        updateDD('10');
+
+        $('#counter p').html('10');
+        $('#counter').css('bottom','86%');
         $('.wave, .wave2').css('bottom','90%');
         $('.wave_filler').css('height','90%');
         hideRasterLayer('slr_8')
