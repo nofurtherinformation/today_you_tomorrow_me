@@ -10,7 +10,7 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
 <script src="https://gmousse.github.io/dataframe-js/dist/dataframe.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js" integrity="sha256-k9RyZhvMj2bg0fd8L3IE41t0HpTXnivMoePN/Ksq250=" crossorigin="anonymous"></script>
-
+<script src = "https://d3js.org/d3-dsv.v1.min.js"></script>
 <script src='geometry/geojson.js'></script>
 
 <link href="https://fonts.googleapis.com/css?family=Assistant:400,800|Vesper+Libre" rel="stylesheet"> 
@@ -216,7 +216,7 @@
 <body>
     <div id='map'></div>
     <div id='left_panel'>
-        <div id="pixel_viz"></div>
+        <div id="pixel_viz" style = "padding:15px"><svg id = "svg"> </svg></div>
         <div id="slr_meter">
             <div id="counter"><p>1</p></div>
             <div class="wave_filler"></div>
@@ -323,6 +323,12 @@
     <div id="overlay"></div>
 <script>
 
+var pixel_data;
+const d = d3.csv("https://gist.githubusercontent.com/kat-wicks/f205e7ccfcc730c350237b8a7d3c30fa/raw/84c1ffe852757e74df4f1d533c3097c717169fdb/slr_habitat_loss.csv",  (d, i, columns) => (d3.autoType(d))).then(function(data){
+    pixel_data = data
+})
+
+
 var slr_tiles = [
     {'name':'slr_0', 'url':'http://dev.dylanhalpern.com/slr/slr_00/'},
     {'name':'slr_1', 'url':'http://dev.dylanhalpern.com/slr/slr_01/'},
@@ -346,6 +352,7 @@ var map = new mapboxgl.Map({
     center: [-91.167895, 30.179239], // gulf coast area
     zoom: 8, // regional scale zoom
 });
+
 
 const heatmap_vars = {
             // Increase the heatmap weight based on frequency and property magnitude
@@ -504,6 +511,121 @@ map.on('load', function() {
 
 });
 
+function getArray(slr_level){
+  const values = []
+  if(slr_level == 0){
+    
+  for(let row =0; row<24;row++){
+    let valueArray = [];
+    for(let column =0; column<10;column++){
+     valueArray.push(0);
+    }
+    values.push(valueArray);
+    }
+    
+  } else {
+  for(let row =0; row<24;row++){
+    
+    let valueArray = [];
+    for(let column =0; column<10;column++){
+      if (.5<pixel_data[row*10 + column][slr_level]/pixel_data[row*10 + column]["ORIGINAL AREA"] && pixel_data[row*10 + column][slr_level]/pixel_data[row*10 + column]["ORIGINAL AREA"]<.99)
+        valueArray.push(1);
+      else if ((pixel_data[row*10 + column][slr_level]/pixel_data[row*10 + column]["ORIGINAL AREA"])<=.5)
+        valueArray.push(0);
+      else if (pixel_data[row*10 + column][slr_level]/pixel_data[row*10 + column]["ORIGINAL AREA"]>=.99)
+        valueArray.push(2);
+    }
+    
+    values.push(valueArray);
+  }}
+    return values;
+  
+}
+
+function grid (config) {
+    /*
+    * CREDIT FOR GRID TO @bryangingechen on Observable.
+    */
+
+
+  // defaults
+  config = Object.assign({size:document.getElementById("pixel_viz").offsetWidth/19, numStates:3, margin:2, outline:'transparent'}, config);  
+  let {nx, ny, size, numStates, init, margin, colorArray, outline} = config;
+
+  // validate init: this is horrible...
+  if (init !== undefined) {
+    if (init.some(d => d.length !== init[0].length) ||
+        init.some(d => d.some(v => v<0 || v >= numStates || v != Math.round(v))))
+      throw new Error(`init should be undefined or a rectangular matrix with integer entries between 0 and ${numStates-1}`);
+    if (nx === undefined && ny !== undefined) {
+      if (ny === init.length)
+        nx = init[0].length;
+      else throw new Error(`init length:${init.length} not equal to ny:${ny}`);
+    } else if (ny === undefined && nx !== undefined) {
+      if (nx === init[0].length)
+        ny = init.length;
+      else throw new Error(`init inner length:${init[0].length} not equal to nx:${nx}`);
+    }
+    else if (nx === undefined && ny === undefined) {
+      ny = init.length;
+      nx = init[0].length;
+    }
+  } else {
+    if (nx === undefined && ny !== undefined)
+      nx = ny;
+    else if (ny === undefined && nx !== undefined)
+      ny = nx;
+    else if (nx === undefined && ny === undefined)
+      ny = nx = 5;
+  }
+  
+    colorArray = ["#0074e7", "#72b9ff", "#f9f9f9"];
+
+  // Array of values, start out all 0 if init not defined
+  const state = init ? init.map(d => d.slice()) : Array.from({length:ny}, d => Array(nx).fill(0));
+
+  const svg = d3.select("#svg").attr("width",nx*(size+2*margin)).attr("height", ny*(size+2*margin));
+
+   //const svg = d3.select(DOM.svg(nx*(size+2*margin), ny*(size+2*margin)));
+  const el = svg.node();
+
+  const rectData = [];
+  for (let y=0; y<ny; y++)
+    for (let x=0; x<nx; x++)
+      rectData.push({x,y});
+
+  const grid = svg.append("g")
+      .attr("cursor", "pointer")
+    .selectAll("rect")
+    .data(rectData)
+    .join("rect")
+      .attr("x", d => d.x*(size + 2*margin) + margin)
+      .attr("y", d => d.y*(size + 2*margin) + margin)
+      .attr("fill", d => colorArray[state[d.y][d.x]])
+      .attr("stroke", outline)
+      .attr("width", size)
+      .attr("height", size);
+  el.addEventListener('inputArray', ({detail}) => {
+    if (detail !== null && detail !== undefined) {
+      if (detail.length === ny &&
+          detail.every(d => d.length === nx && d.every(v => v < numStates && v >= 0 && v === Math.round(v)))) {
+        state = detail;
+      } else
+        return console.log(`failed inputArray event: ${detail}`);
+    } else {
+      state = init ? init.map(d => d.slice()) : Array.from({length:ny}, d => Array(nx).fill(0));
+    }
+    el.value = state;
+    grid.attr("fill", d => colorArray[state[d.y][d.x]]);
+    el.dispatchEvent(new CustomEvent('input'));
+  });
+
+  el.value = state;
+  return el;
+}
+
+
+
 function getPosition(marker) { // gets the position roughly when the marker enters the frame
     return ($(`#${marker}`).offset().top-760)
 }
@@ -541,10 +663,12 @@ $(window).scroll(function() { // whenever the page scrolls
     var height = $(window).scrollTop(); // current position
 
     if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) { 
+        grid({init: getArray(0)});
     } else if ((height  > getPosition('marker2')) && (height  < getPosition('marker3'))) { 
         showRasterLayer('bird_env');
         $('#slr_meter').fadeOut();
         hideRasterLayer('slr_1');
+         grid({init: getArray(1)});
     } else if ((height  > getPosition('marker3')) && (height  < getPosition('marker4'))) {
         hideRasterLayer('bird_env');
         hideRasterLayer('fish_env');
@@ -552,13 +676,14 @@ $(window).scroll(function() { // whenever the page scrolls
 
         $('#slr_meter').fadeIn();
         showRasterLayer('slr_1');
+        grid({init: getArray(1)});
         $('#counter').css('bottom','5%');
         $('#counter p').html('1');
         $('.wave, .wave2').css('bottom','0%');
     } else if ((height  > getPosition('marker4')) && (height  < getPosition('marker5'))) { 
         showRasterLayer('slr_2');
         hideRasterLayer('slr_3');
-
+        grid({init: getArray(2)});
         $('#counter p').html('2')
         $('#counter').css('bottom','13%')
         $('.wave, .wave2').css('bottom','10%');
@@ -567,6 +692,7 @@ $(window).scroll(function() { // whenever the page scrolls
     } else if ((height > getPosition('marker5')) && (height  < getPosition('marker6'))) { 
         showRasterLayer('slr_3')
         $('#counter p').html('3')
+        grid({init: getArray(3)});
         $('#counter').css('bottom','21%')
         $('.wave, .wave2').css('bottom','20%');
         $('.wave_filler').css('height','20%');
@@ -589,18 +715,21 @@ $(window).scroll(function() { // whenever the page scrolls
     } else if ((height > getPosition('marker7')) && (height  < getPosition('marker8'))) {
         showRasterLayer('slr_4')
         $('#counter p').html('4')
+
         $('#counter').css('bottom','29%')
         $('.wave, .wave2').css('bottom','30%');
         $('.wave_filler').css('height','30%');
         
         hideRasterLayer('slr_2')
         hideRasterLayer('slr_5')
+        grid({init: getArray(4)});
     } else if ((height > getPosition('marker8')) && (height  < getPosition('marker9'))) { 
         showRasterLayer('slr_5')
         $('#counter p').html('5')
         $('#counter').css('bottom','37%')
         $('.wave, .wave2').css('bottom','40%');
         $('.wave_filler').css('height','40%');
+        grid({init: getArray(5)});
         hideRasterLayer('slr_3')
         hideRasterLayer('slr_6')
     } else if ((height > getPosition('marker9')) && (height  < getPosition('marker10'))) { 
@@ -611,6 +740,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','50%');
         hideRasterLayer('slr_2')
         hideRasterLayer('slr_7')
+        grid({init: getArray(6)});
         map.flyTo({
                 center: [-92.8386999,29.867172],
                 zoom: 9,
@@ -631,6 +761,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','60%');
         hideRasterLayer('slr_5')
         hideRasterLayer('slr_8')
+        grid({init: getArray(7)});
     } else if ((height > getPosition('marker12')) && (height  < getPosition('marker13'))) { 
         showRasterLayer('slr_8')
         $('#counter p').html('8')
@@ -639,6 +770,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','70%');
         hideRasterLayer('slr_6')
         hideRasterLayer('slr_9')
+        grid({init: getArray(8)});
     } else if ((height > getPosition('marker13')) && (height  < getPosition('marker14'))) { 
         showRasterLayer('slr_9')
         $('#counter p').html('9')
@@ -647,6 +779,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','80%');
         hideRasterLayer('slr_7')
         hideRasterLayer('slr_10')
+        grid({init: getArray(9)});
 
     } else if (height > getPosition('marker14')) { 
         showRasterLayer('slr_10') 
@@ -655,7 +788,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave, .wave2').css('bottom','90%');
         $('.wave_filler').css('height','90%');
         hideRasterLayer('slr_8')
-
+        grid({init: getArray(10)});
     } else {
     }
 })
