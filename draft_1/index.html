@@ -81,6 +81,7 @@
     .hidden{
         display:none;
     }
+    
     .left_panel_boxes{
     padding:2%;
     margin:5%;
@@ -269,14 +270,16 @@
 
 }
 #gridImg {
-    position: fixed;
-    top:10vh;
-    left:20vw;
-    width:400px;
-    height:400px;
+    height:20vh;
     z-index:600;
     background-size:contain;
     background-repeat:no-repeat;
+    width:72.25%;
+    padding:0;
+    margin:7%;
+}
+#gridImg h3 {
+    margin-top: -3vh;
 }
 #pixel_viz rect:hover {
     stroke: white;
@@ -289,9 +292,10 @@
     <div id='map'></div>
     <div id='left_panel'>
         
-        <div id="gridImg"></div>
         <div id = "stats_left">
-        <div class = "left_panel_boxes"><h3 style = "background-color: transparent; box-shadow:none;padding-bottom:0%">Species Remaining</h3><div  id="pixel_viz"><svg id = "svg"> </svg></div></div>
+        <div class = "left_panel_boxes"><h3 style = "background-color: transparent; box-shadow:none;padding-bottom:0%">Species Remaining</h3><div  id="pixel_viz"><svg id = "svg"> </svg></div>
+        </div>
+            
 
         <div id="human_counter">
             <h3 class = "left_panel_boxes">Population Displaced:<br><span id="dd_0"></span></h3>
@@ -299,6 +303,7 @@
             <h3 class = "left_panel_boxes">Housing Value Lost:<br>$<span id="dd_2"></span></h3>
         </div>
     </div>
+    <div id="gridImg"></div>
         <div id="slr_meter">
             <h2 id = "vertical-text">SEA LEVEL RISE METER</h2>
             <div id="counter"><p>1</p></div>
@@ -788,12 +793,15 @@ function getRandomInt(min, max) {
 }
 function handleMouseOver(){
     getGridImg(pixel_data[this.id].SPECIES);
+    $('#gridImg').fadeIn();
+
 }
 function handleMouseOut(){
     $('#gridImg').css('background-image','none');
 }
-$('rect').mouseout(function(){
+$('#left_panel').mouseleave(function(){
     $('#gridImg').css('background-image','none');
+    $('#gridImg').fadeOut();
 })
 function getPosition(marker) { // gets the position roughly when the marker enters the frame
     return ($(`#${marker}`).offset().top-760)
@@ -908,14 +916,14 @@ $(window).scroll(function() { // whenever the page scrolls
 
         map.setFilter('bird_env', ['==', 'NAME', 'Piping plover']);
             showRasterLayer('bird_env');
-            map.flyTo({
-                center: [-90.7393522,30.0464164],
-                zoom: 10,
-                bearing: 0,
-                speed: 0.2,
-                curve: 1,
-                easing: function (t) { return t; }
-                });
+            // map.flyTo({
+            //     center: [-90.7393522,30.0464164],
+            //     zoom: 10,
+            //     bearing: 0,
+            //     speed: 0.2,
+            //     curve: 1,
+            //     easing: function (t) { return t; }
+            //     });
 
         hideRasterLayer('slr_1')
         hideRasterLayer('slr_4')
@@ -959,15 +967,15 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_2')
         hideRasterLayer('slr_7')
         grid({init: getArray(6)});
-        map.flyTo({
+        // map.flyTo({
 
-                center: [-91.167895, 30.179239], // gulf coast area
-                zoom: 8, // regional scale zoom
-                bearing: 0,
-                speed: 0.1,
-                curve: 1,
-                easing: function (t) { return t; }
-                });
+        //         center: [-91.167895, 30.179239], // gulf coast area
+        //         zoom: 8, // regional scale zoom
+        //         bearing: 0,
+        //         speed: 0.1,
+        //         curve: 1,
+        //         easing: function (t) { return t; }
+        //         });
 
         map.setFilter('bird_env', ['==', 'ELEMENT', 'BIRD']);
         hideRasterLayer('bird_env');
