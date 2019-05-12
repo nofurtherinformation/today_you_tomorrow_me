@@ -11,7 +11,7 @@
 <script src="https://gmousse.github.io/dataframe-js/dist/dataframe.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js" integrity="sha256-k9RyZhvMj2bg0fd8L3IE41t0HpTXnivMoePN/Ksq250=" crossorigin="anonymous"></script>
 <script src = "https://d3js.org/d3-dsv.v1.min.js"></script>
-<script src='geometry/geojson.js'></script>
+<script src='geometry/habitats.js'></script>add
 
 <link href="https://fonts.googleapis.com/css?family=Assistant:400,800|Vesper+Libre" rel="stylesheet">
 
@@ -333,9 +333,9 @@
 <body>
     <div id='map'></div>
     <div id="stickyButtons">
-        <div id="bird_env2" class="button" alt="bird_env"><img src="img/bird.png"></div>
-        <div id="fish_env2" class="button" alt="fish_env"><img src="img/fish.png"></div>
-        <div id="invert_env2" class="button" alt="invert_env"><img src="img/shrimp.png"></div>
+        <div id="BIRD" class="button" alt="bird_env"><img src="img/bird.png"></div>
+        <div id="FISH" class="button" alt="fish_env"><img src="img/fish.png"></div>
+        <div id="INVERT" class="button" alt="invert_env"><img src="img/shrimp.png"></div>
     </div>
     <div id='left_panel'>
 
@@ -499,7 +499,7 @@ var slr_tiles = [
     {'name':'slr_9', 'url':'http://dev.dylanhalpern.com/slr/slr_09/'},
     {'name':'slr_10', 'url':'http://dev.dylanhalpern.com/slr/slr_10/'}
 ]
-var slr_loss = [slr_1_loss,slr_2_loss,slr_3_loss,slr_4_loss,slr_5_loss,slr_6_loss,slr_7_loss,slr_8_loss,slr_9_loss,slr_10_loss]
+// var slr_loss = [slr_1_loss,slr_2_loss,slr_3_loss,slr_4_loss,slr_5_loss,slr_6_loss,slr_7_loss,slr_8_loss,slr_9_loss,slr_10_loss]
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGhhbHBlcm4iLCJhIjoiY2pvMnliandsMHJsbTNwcGhlNWhqYzF3ZyJ9.g5FiNV9s5DXPt1RaE2wNyg';
 
@@ -601,96 +601,34 @@ map.on('load', function() {
             "line-width": 1
         }
     })
-    for(let i=0;i<10;++i){
-        map.addLayer({
-            'id':`slr_${i+1}_loss`,
-            'type':'fill',
-            'source':{
-                'type':'geojson',
-                'data':slr_loss[i],
-            },
-            "layout": {
-                'visibility':'none'
-        },
-        "paint": {
-            "fill-opacity":0,
-            "fill-color":'#FF5E57'
-            }
-        })
-    };
 
-    map.addLayer({
-        'id':'invert_env_outline',
-        'type': 'fill',
-        'source': {
-            'type': 'geojson',
-            'data': invert_env
-        },
-        "layout": {
-            "visibility":"none"
-        },
-        "paint":{
-             "fill-opacity":0.6,
-           "fill-color":"#68915b",
-           "fill-outline-color":"#68915b"
-        }
-    })
-  map.addLayer({
-        'id':'bird_env_outline',
-        'type': 'fill',
-        'source': {
-            'type': 'geojson',
-            'data': bird_env
-        },
-        "layout": {
-            "visibility":"none"
-        },
-        "paint":{
-             "fill-opacity":0.6,
-           "fill-color":"#68915b",
-           "fill-outline-color":"#68915b"
-        }
-    })  
-    map.setFilter('bird_env_outline', ['!=', 'Louisian_2', 'pelagic']);  
-  map.addLayer({
-        'id':'fish_env_outline',
-        'type': 'fill',
-        'source': {
-            'type': 'geojson',
-            'data': fish_env
-        },
-        "layout": {
-           
-            "visibility":"none"
-        },
-        "paint":{
-             "fill-opacity":0.6,
-           "fill-color":"#68915b",
-           "fill-outline-color":"#68915b"
-        }
-    })
-    map.addLayer({
-        'id':'invert_env',
-        'type': 'heatmap',
-        'source': {
-            'type': 'geojson',
-            'data': invert_env
-        },
-        'layout': {
-            'visibility':'none'
-        },
-        "paint": heatmap_vars
-    })
 
+    // map.addLayer({
+    //     'id':'wash',
+    //     'type': 'fill',
+    //     'source': {
+    //         'type': 'geojson',
+    //         'data': habitats
+    //     },
+    //     "layout": {
+    //         "visibility":"none"
+    //     },
+    //     "paint":{
+    //          "fill-opacity":0.6,
+    //        "fill-color":"#68915b",
+    //        "fill-outline-color":"#68915b"
+    //     }
+    // })
+  
     map.addLayer({
         'id':'bird_env',
         'type': 'heatmap',
         'source': {
             'type': 'geojson',
-            'data': bird_env
+            'data': habitats
         },
         'layout': {
-            'visibility': 'none'
+           'visibility':'none'
         },
         "paint": heatmap_vars
     })
@@ -699,14 +637,29 @@ map.on('load', function() {
         'type': 'heatmap',
         'source': {
             'type': 'geojson',
-            'data': fish_env
+            'data': habitats
         },
         'layout': {
-            'visibility':'none'
+           'visibility':'none'
         },
         "paint": heatmap_vars
     })
 
+    map.addLayer({
+        'id':'invert_env',
+        'type': 'heatmap',
+        'source': {
+            'type': 'geojson',
+            'data': habitats
+        },
+        'layout': {
+           'visibility':'none'
+        },
+        "paint": heatmap_vars
+    })
+
+
+   
     var popup = new mapboxgl.Popup({
         closeButton: true,
         closeOnClick: true
@@ -890,6 +843,7 @@ function hideLayer(layer){ // layer must be passed as a string in quotes
     map.setLayoutProperty(layer, 'visibility', 'none');
     map.setPaintProperty(layer, 'fill-opacity', 0); // setting the CSS property of the SVG to 0, hiding it
 
+
 };
 
 function showLayer(layer, opacity){ // layer must be passed as a string in quotes
@@ -975,9 +929,9 @@ $(window).scroll(function() { // whenever the page scrolls
     } else if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {
         $('#overlay').fadeOut();
         updateDD('0');
-        hideRasterLayer('bird_env');
-        hideRasterLayer('fish_env');
-        hideRasterLayer('invert_env');
+        showRasterLayer('bird_env');
+        showRasterLayer('fish_env');
+        showRasterLayer('invert_env');
     } else if ((height  > getPosition('marker2')) && (height  < getPosition('marker3'))) {
         showRasterLayer('bird_env');
         $('#slr_meter').fadeOut();
