@@ -417,10 +417,11 @@ const displacement_data = d3.csv('summary_human_displacement.csv').then(function
     dd = data;
 })
 
-var pixel_data;
-const px_data = d3.csv('HABITAT_LOSS_PERCENTAGES.csv').then(function(data){
-    pixel_data=data;
-})
+//doesn't seem to work with CSV....
+// var pixel_data;
+// const px_data = d3.csv('HABITAT_LOSS_PERCENTAGES.csv').then(function(data){
+//     pixel_data=data;
+// })
 
 var pixel_data;
 const d = d3.csv("https://gist.githubusercontent.com/kat-wicks/f205e7ccfcc730c350237b8a7d3c30fa/raw/84c1ffe852757e74df4f1d533c3097c717169fdb/slr_habitat_loss.csv",  (d, i, columns) => (d3.autoType(d))).then(function(data){
@@ -822,6 +823,7 @@ $(window).scroll(function() { // whenever the page scrolls
     if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {
 
         grid({init: getArray(0)});
+        updateDD('0');
 
         hideRasterLayer('bird_env');
         hideRasterLayer('fish_env');
@@ -830,6 +832,8 @@ $(window).scroll(function() { // whenever the page scrolls
         showRasterLayer('bird_env');
         $('#slr_meter').fadeOut();
         hideRasterLayer('slr_1');
+        grid({init: getArray(0)});
+        updateDD('0');
     } else if ((height  > getPosition('marker3')) && (height  < getPosition('marker4'))) {
         hideRasterLayer('bird_env');
         hideRasterLayer('fish_env');
