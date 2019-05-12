@@ -72,13 +72,15 @@
       text-align:center;
     }
     #overlay {
-        z-index:499;
+        z-index:502;
         width:100%;
         height:100%;
         position:fixed;
         top:0;
         left:0;
-        opacity:0;
+        opacity:1;
+        background-image:url('/img/bg.jpg');
+        background-size:cover;
     }
     .long-break {
         height:75vh;
@@ -112,7 +114,7 @@
     left:0;
     top:0;
     background: rgba(255,255,255,0.6);
-    z-index:550;
+    z-index:501;
     box-shadow:0 0 1vw rgba(0,0,0,0.2);
 }
 #pixel_viz{
@@ -898,20 +900,15 @@ $('.show').mouseover(function(){
 })
 $(window).scroll(function() { // whenever the page scrolls
     var height = $(window).scrollTop()+300; // current position
-    if (height == 0) {
-
+    if (height == 300) {
+        $('#overlay').css('background-image','url("/img/bg.jpg")').fadeIn();
         updateDD('0');
-
         hideRasterLayer('bird_env');
         hideRasterLayer('fish_env');
         hideRasterLayer('invert_env');
-
-
     } else if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {
-
-
+        $('#overlay').fadeOut();
         updateDD('0');
-
         hideRasterLayer('bird_env');
         hideRasterLayer('fish_env');
         hideRasterLayer('invert_env');
