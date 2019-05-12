@@ -81,16 +81,36 @@
     .hidden{
         display:none;
     }
+    .left_panel_boxes{
+    padding:2%;
+    margin:5%;
+    width: 85%;
+    box-shadow:0 0 1vw rgba(0,0,0,0.2);
+    background: rgba(255,255,255,0.75);
+
+    font-size:10px;
+}
+#stats_left{
+     width: 85%;
+     display:flex;
+}
 #left_panel {
     width:15vw;
     height:100vh;
     position: fixed;
     left:0;
     top:0;
-    background: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.6);
     z-index:550;
     box-shadow:0 0 1vw rgba(0,0,0,0.2);
 }
+#pixel_viz{
+
+    display: flex;
+    justify-content: center;
+    padding-bottom: 3%;
+}
+
 #slr_meter {
     position: fixed;
     width:2vw;
@@ -99,6 +119,10 @@
     top:0;
     z-index:550;
     overflow:hidden;
+}
+#humaan_counter{
+    display: flex;
+    justify-content: center;
 }
 
 #slr_meter #counter {
@@ -219,33 +243,47 @@
     position: fixed;
     left:0;
     bottom:0;
-    background:white;
-    padding:0.25vh 0.25vw;
+    background:transparent;
+    /*padding:0.25vh 0.25vw;*/
 }
-#human_counter h3 {
+/*#human_counter h3 {
     box-shadow: none;
     margin:0;
     background:none;
-    font-size:10px;
     padding:0;
-}
+}*/
 #human_counter h3 span {
     font-size:20px;
+}
+#vertical-text {
+    writing-mode: tb-rl;
+    transform: rotate(-180deg);
+    transform-origin: 0 left;
+    z-index: =500;
+    background-color: transparent;
+    box-shadow: none;
+    padding:2%;
+    margin:0%;
+    font-size: 20px;
+    color: rgba(0,128,128,0.4);
+
 }
 </style>
 </head>
 <body>
     <div id='map'></div>
     <div id='left_panel'>
-        <div id="pixel_viz" style = "padding:15px"><svg id = "svg"> </svg></div>
+        <div id = "stats_left">
+        <div class = "left_panel_boxes"><h3 style = "background-color: transparent; box-shadow:none;padding-bottom:0%">Species Remaining</h3><div  id="pixel_viz"><svg id = "svg"> </svg></div></div>
 
-        <div id="pixel_viz"></div>
         <div id="human_counter">
-            <h3>Population Displaced:<br><span id="dd_0"></span></h3>
-            <h3>Housing Units Displaced:<br><span id="dd_1"></span></h3>
-            <h3>Housing Value Lost:<br>$<span id="dd_2"></span></h3>
+            <h3 class = "left_panel_boxes">Population Displaced:<br><span id="dd_0"></span></h3>
+            <h3 class = "left_panel_boxes">Housing Units Displaced:<br><span id="dd_1"></span></h3>
+            <h3 class = "left_panel_boxes">Housing Value Lost:<br>$<span id="dd_2"></span></h3>
         </div>
+    </div>
         <div id="slr_meter">
+            <h2 id = "vertical-text">SEA LEVEL RISE METER</h2>
             <div id="counter"><p>1</p></div>
             <div class="wave_filler"></div>
             <div class="wave"></div>
@@ -254,9 +292,9 @@
     </div>
     <div id='scrolling-container'>
             <div class="short-break"></div>
+            <h1 id="marker1"></h1>
             <h1 id="title">Here Today,<br>Gone Tomorrow.</h1>
             <div class="long-break"></div>
-            <h1 id="marker1"></h1>
                 <p>Louisana's gulf coast is a site of incredible bio-diversity, natural beauty, and economic activity that relies on a stable ecosystem. The coast has been a site of recovery -- from the wake of Hurricane Katrina to numerous nearly-extinct species, some recoveries have been more complete than others.</p>
                 <div class="short-break" id="marker2"></div>
                 <p>But facing the coast is a challenge from which recovery may not be possible -- sea level rise. Fueled by climate change, ever-increasing high water marks threaten the precarious biodiversity unique to the Mississippi River Delta. Louisiana's coastal region is a sensitive and critical habtiat for a variety of species, home to:</p>
@@ -630,7 +668,7 @@ function grid (config) {
 
 
   // defaults
-  config = Object.assign({size:document.getElementById("pixel_viz").offsetWidth/19, numStates:3, margin:2, outline:'transparent'}, config);  
+  config = Object.assign({size:document.getElementById("pixel_viz").offsetWidth/17, numStates:3, margin:2, outline:'transparent'}, config);  
   let {nx, ny, size, numStates, init, margin, colorArray, outline} = config;
 
   // validate init: this is horrible...
@@ -660,7 +698,7 @@ function grid (config) {
       ny = nx = 5;
   }
   
-    colorArray = ["#0074e7", "#72b9ff", "#f9f9f9"];
+    colorArray = ["#0074e7", "#72b9ff", "#DCDCDC"];
 
   // Array of values, start out all 0 if init not defined
   const state = init ? init.map(d => d.slice()) : Array.from({length:ny}, d => Array(nx).fill(0));
@@ -682,10 +720,10 @@ function grid (config) {
     .join("rect")
       .attr("x", d => d.x*(size + 2*margin) + margin)
       .attr("y", d => d.y*(size + 2*margin) + margin)
-      .attr("fill", d => colorArray[state[d.y][d.x]])
       .attr("stroke", outline)
       .attr("width", size)
-      .attr("height", size);
+      .attr("height", size)
+      .attr("fill", d => colorArray[state[d.y][d.x]]);
   el.addEventListener('inputArray', ({detail}) => {
     if (detail !== null && detail !== undefined) {
       if (detail.length === ny &&
@@ -705,6 +743,11 @@ function grid (config) {
   return el;
 }
 
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 function getPosition(marker) { // gets the position roughly when the marker enters the frame
     return ($(`#${marker}`).offset().top-760)
@@ -770,7 +813,6 @@ $(window).scroll(function() { // whenever the page scrolls
         showRasterLayer('bird_env');
         $('#slr_meter').fadeOut();
         hideRasterLayer('slr_1');
-         grid({init: getArray(1)});
     } else if ((height  > getPosition('marker3')) && (height  < getPosition('marker4'))) {
         hideRasterLayer('bird_env');
         hideRasterLayer('fish_env');
@@ -818,7 +860,7 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_1')
         hideRasterLayer('slr_4')
     } else if ((height > getPosition('marker6')) && (height  < getPosition('marker7'))) { 
-
+        grid({init: getArray(3)});
     } else if ((height > getPosition('marker7')) && (height  < getPosition('marker8'))) {
         showRasterLayer('slr_4')
         updateDD('4');
@@ -872,7 +914,7 @@ $(window).scroll(function() { // whenever the page scrolls
         showLayer('slr_6_loss', 0.75);
     } else if ((height > getPosition('marker10')) && (height  < getPosition('marker11'))) { 
 
-
+        grid({init: getArray(6)});
     } else if ((height > getPosition('marker11')) && (height  < getPosition('marker12'))) { 
         showRasterLayer('slr_7')
         updateDD('7');
