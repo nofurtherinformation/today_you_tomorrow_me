@@ -247,7 +247,7 @@
     box-shadow:0 0 1vw rgba(0,0,0,0.2);
 }
 .show_active {
-    background-color: #FF5E57;
+    background-color: #68915b;
 }
 .show img {
     width:14%;
@@ -745,7 +745,8 @@ function grid (config) {
       ny = nx = 5;
   }
 
-    colorArray = ["#000000", "#BCBCBC", "#ffffff"];
+   
+  colorArray =  ["#68915b","#9fbc96", "transparent"];
 
   // Array of values, start out all 0 if init not defined
   const state = init ? init.map(d => d.slice()) : Array.from({length:ny}, d => Array(nx).fill(0));
@@ -796,7 +797,7 @@ function grid (config) {
 function updateGrid(init){
 
     const state = init.map(d => d.slice());
-    colorArray = ["#000000", "#BCBCBC", "#ffffff"];
+     colorArray = ["#68915b","#9fbc96", "transparent"];
     const rectData = [];
       for (let y=0; y<init.length; y++){
         for (let x=0; x<init[0].length; x++){
