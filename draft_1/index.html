@@ -1103,7 +1103,7 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_7')
         hideRasterLayer('slr_10')
         updateGrid(getArray(9));
-        $('#stickyButtons').fadeIn();
+        $('#stickyButtons').css('opacity','1');
         $('#video_overlay').fadeOut().css('opacity','0');
     } else if (height-200 > getPosition('marker14')) {
         showRasterLayer('slr_10');
