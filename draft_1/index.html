@@ -16,6 +16,9 @@
 <link href="https://fonts.googleapis.com/css?family=Assistant:400,800|Vesper+Libre" rel="stylesheet">
 
 <style>
+    html {
+        scroll-behavior: smooth;
+    }
     body {
         margin:0;
         padding:0;
@@ -328,6 +331,22 @@
 #pixel_viz:hover {
     cursor: cell;
 }
+#video_overlay {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%; 
+  min-height: 100%;
+  opacity:0;
+  z-index:501;
+  transition:5s all;
+}
+#return_top {
+    text-decoration:none;
+    color:rgb(165,35,63);
+    font-weight:800;
+    font-size:16px;
+}
 </style>
 </head>
 <body>
@@ -463,9 +482,14 @@
                   <p><strong>Cut your electricity use</strong> by choosing more energy efficient appliances, especially on large items like refrigerators.</p>
                   <p><strong>Eat less red meat,</strong> especially beef and lamb.</p>
                   <p><strong>Be informed and open to talking with others</strong> about the impact climate change has on the world.</p>
-            <div class = "short-break"></div>
+                  <p><a href="#" id="return_top">⇡ Return to the beginning</a></p>
+
+                  <div class = "short-break"></div>
     </div>
     <div id="overlay"></div>
+    <video id="video_overlay" autoplay muted loop>
+            <source src="img/closing_video.mp4" type="video/mp4">
+    </video>
 <script>
 var dd;
 const displacement_data = d3.csv('summary_human_displacement.csv').then(function(data){
@@ -890,6 +914,7 @@ function getGridImg(term){
 
 $(document).ready(function(){
     $('#stickyButtons').fadeOut();
+    $('#video_overlay').fadeOut();
     $(this).scrollTop(0);
     $('#slr_meter').fadeOut();
     grid({init: getArray(0)});
@@ -1078,8 +1103,9 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_7')
         hideRasterLayer('slr_10')
         updateGrid(getArray(9));
-
-    } else if (height > getPosition('marker14')) {
+        $('#stickyButtons').fadeIn();
+        $('#video_overlay').fadeOut().css('opacity','0');
+    } else if (height-200 > getPosition('marker14')) {
         showRasterLayer('slr_10');
         updateDD('10');
 
@@ -1089,6 +1115,8 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','90%');
         hideRasterLayer('slr_8')
         updateGrid(getArray(10));
+        $('#video_overlay').fadeIn().css('opacity','1');
+        $('#stickyButtons').css('opacity','0');
     } else {
     }
 })
