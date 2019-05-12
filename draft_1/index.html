@@ -463,7 +463,7 @@ const displacement_data = d3.csv('summary_human_displacement.csv').then(function
 // })
 
 var pixel_data;
-const d = d3.csv("https://gist.githubusercontent.com/kat-wicks/f205e7ccfcc730c350237b8a7d3c30fa/raw/84c1ffe852757e74df4f1d533c3097c717169fdb/slr_habitat_loss.csv",  (d, i, columns) => (d3.autoType(d))).then(function(data){
+const d = d3.csv("https://gist.githubusercontent.com/kat-wicks/f205e7ccfcc730c350237b8a7d3c30fa/raw/1995471ea33f31e7801770b080fd3cb218c4c977/slr_habitat_loss.csv",  (d, i, columns) => (d3.autoType(d))).then(function(data){
     pixel_data = data
 })
 
@@ -783,7 +783,10 @@ map.on('load', function() {
 
 var rows_num = 24;
 var cols_num = 10;
+var slr_num = 0;
+
 function getArray(slr_level){
+  slr_num = slr_level;
   const values = []
   if(slr_level == 0){
 
@@ -851,7 +854,7 @@ function grid (config) {
       ny = nx = 5;
   }
 
-   
+
   colorArray =  ["#68915b","#9fbc96", "transparent"];
 
   // Array of values, start out all 0 if init not defined
@@ -927,9 +930,13 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 function handleMouseOver(){
-    getGridImg(pixel_data[this.id].SPECIES);
+    if (slr_num == 0){
+      let loss = 0;
+    }else {
+      loss = ((pixel_data[this.id][slr_num])/(pixel_data[this.id]["ORIGINAL AREA"])*100).toFixed(0);
+    };
+    $("#gridImg").html(`<h3>${pixel_data[this.id].SPECIES}<br>${loss}% loss</h3>`);
     $('#gridImg').fadeIn();
-
 }
 function handleMouseOut(){
     $('#gridImg').css('background-image','none');
@@ -965,7 +972,7 @@ function revealLayer(layer){ // layer must be passed as a string in quotes
 };
 function updateDD(slr){
     $('#dd_0').html(parseInt(dd[0][`${slr}`]).toLocaleString() + ' people');
-    $('#dd_1').html(parseInt(dd[1][`${slr}`]).toLocaleString() + ' housing units');
+    $('#dd_1').html(parseInt(dd[1][`${slr}`]).toLocaleString() + ' units');
     $('#dd_2').html(parseFloat(dd[2][`${slr}`]).toFixed(2)+' bn');
 }
 
@@ -991,6 +998,7 @@ function getGridImg(term){
 };
 
 $(document).ready(function(){
+    $(this).scrollTop(0);
     $('#slr_meter').fadeOut();
     grid({init: getArray(0)});
 })
