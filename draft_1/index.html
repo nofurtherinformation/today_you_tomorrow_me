@@ -236,8 +236,9 @@
     transform: translate3d(0,5px,0);
   }
 }
-.show {
-    width:25%;
+.show, #stickyButtons .button {
+    width:5vw;
+    height:2vh;
     display:inline;
     margin:10px;
     background-color:white;
@@ -248,12 +249,23 @@
     transition: 250ms all;
     box-shadow:0 0 1vw rgba(0,0,0,0.2);
 }
-.show_active {
+.show_active, #stickyButtons .button_active {
     background-color: #68915b;
 }
-.show img {
+#stickyButtons .button:hover {
+    background-color:#9fbc96;
+}
+.show img, #stickyButtons .button img {
     width:14%;
     transform: translateY(41%);
+}
+#stickyButtons {
+    z-index:551;
+    width:25vw;
+    position:fixed;
+    top:1vh;
+    left:18.45vw;
+
 }
 .mapboxgl-popup-content h2 {
     box-shadow:none;
@@ -320,6 +332,11 @@
 </head>
 <body>
     <div id='map'></div>
+    <div id="stickyButtons">
+        <div id="bird_env2" class="button" alt="bird_env"><img src="img/bird.png"></div>
+        <div id="fish_env2" class="button" alt="fish_env"><img src="img/fish.png"></div>
+        <div id="invert_env2" class="button" alt="invert_env"><img src="img/shrimp.png"></div>
+    </div>
     <div id='left_panel'>
 
         <div id = "stats_left">
@@ -351,10 +368,9 @@
             <div class="long-break"></div>
                 <p>Louisiana's Gulf coast is a site of incredible biodiversity, natural beauty, and economic activity--all of which relies on a stable ecosystem. This ecosystem has recovered from numerous disruptions, ranging from the rebound in the wake of Hurricane Katrina to the revitalization of several near-extinct species.</p>
                 <p>But facing the coast is a challenge from which recovery may not be possible -- sea level rise. Fueled by climate change, the ever-increasing waterline threatens the fragile biodiversity unique to the Mississippi River Delta. Louisiana's coastal region is a sensitive and critical habitat for a variety of species:</p>
-                <div id="bird_env" class="show show_active"><img src="img/bird.png"></div>
-                <div id="fish_env" class="show"><img src="img/fish.png"></div>
-                <div id="invert_env" class="show"><img src="img/shrimp.png"></div>
-            <div class = "short-break", id = "marker2"></div>
+                <div id="bird_env" class="show show_active" alt="bird_env"><img src="img/bird.png"></div>
+                <div id="fish_env" class="show" alt="fish_env"><img src="img/fish.png"></div>
+                <div id="invert_env" class="show" alt="invert_env"><img src="img/shrimp.png"></div>            <div class = "short-break", id = "marker2"></div>
                 <p>And all these homes are threatened by the same thing, sea level rise. This page illustrates how and when changing sea levels will impact animal habitat and the people living along the Louisiana coast. Each block on the left represents a local animal's habitat and will fade as that habitat is displaced. Hover over it to see more information.</p>
             <div class="long-break"></div>
             <h1 id = "marker3">Onward and Upward - One Foot Higher</h1>
@@ -919,6 +935,7 @@ function getGridImg(term){
 };
 
 $(document).ready(function(){
+    $('#stickyButtons').fadeOut();
     $(this).scrollTop(0);
     $('#slr_meter').fadeOut();
     grid({init: getArray(0)});
@@ -929,10 +946,26 @@ $('.show').mouseover(function(){
     hideRasterLayer('fish_env');
     $('.show').removeClass('show_active');
     $(this).addClass('show_active');
-    showRasterLayer(this.id);
+    showRasterLayer($(`#${this.id}`).attr('alt'));
+    console.log($(`#${this.id}`).attr('alt'))
 })
+$('#stickyButtons .button').click(function(){
+    $(this).toggleClass('button_active');
+    if (map.getLayer($(`#${this.id}`).attr('alt')).visibility == "none") {
+    showRasterLayer($(`#${this.id}`).attr('alt'));
+    } else {
+        hideRasterLayer($(`#${this.id}`).attr('alt'));
+    }
+})
+
 $(window).scroll(function() { // whenever the page scrolls
     var height = $(window).scrollTop()+300; // current position
+    if (($(window).scrollTop()) > ($('#fish_env').offset().top)) {
+            $('#stickyButtons').fadeIn();
+            $('.button').removeClass('button_active')
+    } else {
+        $('#stickyButtons').fadeOut();
+    }
     if (height == 300) {
         $('#overlay').css('background-image','url("/img/bg.jpg")').fadeIn();
         updateDD('0');
