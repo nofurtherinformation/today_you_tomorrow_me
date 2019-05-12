@@ -190,7 +190,7 @@
     margin:2px;
     display: inline;
     font-weight: bold;
-    padding:0.5vw;    
+    padding:0.5vw;
     border-radius: 10px;
 
 
@@ -422,7 +422,6 @@
                     <p>2080</p>
                 </div>
                 <p>Not only is the coastal economy vunerable to sea level rise, so are the people themselves. If the water level rises eight feet, which is projected to occur at the end of this century in the absence of serious mitigation measures, nearly a million Louisianans will be displaced. And while the people can migrate inland, their physical homes, which are often the largest investments made by an American family, cannot. Over 300,000 housing units worth $48 billion will be wiped out, with more potentially to follow.</p>
-                <p>A cold comfort, but only the most extreme models extend sea level rise beyond eight feet.</p>
             <div class="long-break"></div>
             <h1 id="marker13">Nine-feet Rise</h1>
                 <div class="scenarios">
@@ -438,8 +437,9 @@
                     <p>2100+</p>
                     <p>2090</p>
                 </div>
+                <p>Under the unlikely scenario of a 10-feet sea level rise, 83% of bird habitats, 93% of fish habitats, and 99% of invertebrates habitats will be lost along the coast, as well as the land supporting all the mammals reptiles who currently call this area of Louisiana home.</p>
                 <h1>Here today, gone tomorrow.</h1>
-                <p>We don't know where these animals and people will have to go once their homes have been wiped away. But we do know this is happening, and there are ways to slow down the climate change that induces such sea level rise. Here are some suggestions for getting started:</p>
+                <p>We don't know where these animals and people will have to go once their homes have been wiped away. But we do know this is happening, and that the scientific community agrees climate change stemming from our greenhouse gas emissions is the cause. It is within our power to limit our emissions, and do our part in protecting Louisiana's fragile coastal ecosystem. Here are some suggestions for getting started:</p>
                 <p><strong>Reduce your gasoline consumption</strong> by using fuel-efficient cars, public transportation, carpooling, walking, or biking.</p>
                   <p><strong>Fly less</strong>, especially for short-haul flights were are less fuel efficient.</p>
                   <p><strong>Cut your electricity use</strong> by choosing more energy efficient appliances, especially on large items like refrigerators.</p>
@@ -793,6 +793,27 @@ function grid (config) {
   return el;
 }
 
+function updateGrid(init){
+
+    const state = init.map(d => d.slice());
+    colorArray = ["#000000", "#BCBCBC", "#ffffff"];
+    const rectData = [];
+      for (let y=0; y<init.length; y++){
+        for (let x=0; x<init[0].length; x++){
+          rectData.push({x,y});
+        }
+    }
+
+     const g = d3.select("#svg").selectAll("g");
+
+     g.selectAll("rect")
+      .data(rectData)
+      .transition()
+      .duration(getRandomInt(50,400))
+      .attr("fill", d => colorArray[state[d.y][d.x]]);
+
+}
+
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -864,6 +885,7 @@ function getGridImg(term){
 
 $(document).ready(function(){
     $('#slr_meter').fadeOut();
+    grid({init: getArray(0)});
 })
 $('.show').mouseover(function(){
     hideRasterLayer('bird_env');
@@ -886,7 +908,7 @@ $(window).scroll(function() { // whenever the page scrolls
 
     } else if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {
 
-        grid({init: getArray(0)});
+
         updateDD('0');
 
         hideRasterLayer('bird_env');
@@ -896,7 +918,8 @@ $(window).scroll(function() { // whenever the page scrolls
         showRasterLayer('bird_env');
         $('#slr_meter').fadeOut();
         hideRasterLayer('slr_1');
-        grid({init: getArray(0)});
+
+        updateGrid(getArray(0));
         updateDD('0');
     } else if ((height  > getPosition('marker3')) && (height  < getPosition('marker4'))) {
         hideRasterLayer('bird_env');
@@ -906,7 +929,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#slr_meter').fadeIn();
         showRasterLayer('slr_1');
         hideRasterLayer('slr_2');
-        grid({init: getArray(1)});
+        updateGrid(getArray(1));
         $('#counter').css('bottom','5%');
         $('#counter p').html('1');
         $('.wave, .wave2').css('bottom','0%');
@@ -915,7 +938,7 @@ $(window).scroll(function() { // whenever the page scrolls
     } else if ((height  > getPosition('marker4')) && (height  < getPosition('marker5'))) {
         showRasterLayer('slr_2');
         hideRasterLayer('slr_3');
-        grid({init: getArray(2)});
+        updateGrid(getArray(2));
         $('#counter p').html('2')
         $('#counter').css('bottom','13%')
         $('.wave, .wave2').css('bottom','10%');
@@ -926,7 +949,7 @@ $(window).scroll(function() { // whenever the page scrolls
     } else if ((height > getPosition('marker5')) && (height  < getPosition('marker6'))) {
         showRasterLayer('slr_3')
         $('#counter p').html('3')
-        grid({init: getArray(3)});
+        updateGrid(getArray(3));
         $('#counter').css('bottom','21%')
         $('.wave, .wave2').css('bottom','20%');
         $('.wave_filler').css('height','20%');
@@ -947,7 +970,7 @@ $(window).scroll(function() { // whenever the page scrolls
         hideRasterLayer('slr_1')
         hideRasterLayer('slr_4')
     } else if ((height > getPosition('marker6')) && (height  < getPosition('marker7'))) {
-        grid({init: getArray(3)});
+        updateGrid(getArray(3));
     } else if ((height > getPosition('marker7')) && (height  < getPosition('marker8'))) {
         showRasterLayer('slr_4')
         updateDD('4');
@@ -960,7 +983,7 @@ $(window).scroll(function() { // whenever the page scrolls
 
         hideRasterLayer('slr_2')
         hideRasterLayer('slr_5')
-        grid({init: getArray(4)});
+        updateGrid(getArray(4));
     } else if ((height > getPosition('marker8')) && (height  < getPosition('marker9'))) {
         showRasterLayer('slr_5');
         updateDD('5');
@@ -969,7 +992,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#counter').css('bottom','37%');
         $('.wave, .wave2').css('bottom','40%');
         $('.wave_filler').css('height','40%');
-        grid({init: getArray(5)});
+        updateGrid(getArray(5));
         hideRasterLayer('slr_3')
         hideRasterLayer('slr_6')
         hideRasterLayer('slr_3');
@@ -985,7 +1008,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','50%');
         hideRasterLayer('slr_2')
         hideRasterLayer('slr_7')
-        grid({init: getArray(6)});
+        updateGrid(getArray(6));
         // map.flyTo({
 
         //         center: [-91.167895, 30.179239], // gulf coast area
@@ -1001,7 +1024,7 @@ $(window).scroll(function() { // whenever the page scrolls
         showLayer('slr_6_loss', 0.75);
     } else if ((height > getPosition('marker10')) && (height  < getPosition('marker11'))) {
 
-        grid({init: getArray(6)});
+        updateGrid(getArray(6));
     } else if ((height > getPosition('marker11')) && (height  < getPosition('marker12'))) {
         showRasterLayer('slr_7')
         updateDD('7');
@@ -1012,7 +1035,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','60%');
         hideRasterLayer('slr_5')
         hideRasterLayer('slr_8')
-        grid({init: getArray(7)});
+        updateGrid(getArray(7));
     } else if ((height > getPosition('marker12')) && (height  < getPosition('marker13'))) {
         showRasterLayer('slr_8');
         updateDD('8');
@@ -1023,7 +1046,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','70%');
         hideRasterLayer('slr_6')
         hideRasterLayer('slr_9')
-        grid({init: getArray(8)});
+        updateGrid(getArray(8));
         hideRasterLayer('slr_6');
         hideRasterLayer('slr_9');
     } else if ((height > getPosition('marker13')) && (height  < getPosition('marker14'))) {
@@ -1036,7 +1059,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave_filler').css('height','80%');
         hideRasterLayer('slr_7')
         hideRasterLayer('slr_10')
-        grid({init: getArray(9)});
+        updateGrid(getArray(9));
 
     } else if (height > getPosition('marker14')) {
         showRasterLayer('slr_10');
@@ -1047,7 +1070,7 @@ $(window).scroll(function() { // whenever the page scrolls
         $('.wave, .wave2').css('bottom','90%');
         $('.wave_filler').css('height','90%');
         hideRasterLayer('slr_8')
-        grid({init: getArray(10)});
+        updateGrid(getArray(10));
     } else {
     }
 })
