@@ -987,6 +987,7 @@ $(window).scroll(function() { // whenever the page scrolls
     var height = $(window).scrollTop()+300; // current position
     if (($(window).scrollTop()) > ($('#fish_env').offset().top)) {
             $('#stickyButtons').fadeIn();
+            $('.button').removeClass('button_active')
     } else {
         $('#stickyButtons').fadeOut();
     }
