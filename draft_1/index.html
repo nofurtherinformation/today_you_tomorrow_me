@@ -659,10 +659,12 @@ map.on('load', function() {
         console.log(la_name)
         if (la_name != 'null') {
             getImg(la_name);
+        } else {
+            getImg(name + ' louisana')
         }
     });
 
-    map.on('mouseleave', 'places', function() {
+    map.on('mouseleave', 'slr_6_loss', function() {
         map.getCanvas().style.cursor = '';
         map.setPaintProperty('fill-opacity', 0.75);
         popup.remove();
@@ -827,8 +829,8 @@ function revealLayer(layer){ // layer must be passed as a string in quotes
     map.setPaintProperty(layer, 'fill-translate', [0,0]); // setting the CSS property of the SVG to 0, showing it
 };
 function updateDD(slr){
-    $('#dd_0').html(parseFloat(dd[0][`${slr}`]).toFixed(0));
-    $('#dd_1').html(parseFloat(dd[1][`${slr}`]).toFixed(0));
+    $('#dd_0').html(parseInt(dd[0][`${slr}`]).toLocaleString() + ' people');
+    $('#dd_1').html(parseInt(dd[1][`${slr}`]).toLocaleString() + ' housing units');
     $('#dd_2').html(parseFloat(dd[2][`${slr}`]).toFixed(2)+' bn');
 }
 
@@ -888,11 +890,13 @@ $(window).scroll(function() { // whenever the page scrolls
 
         $('#slr_meter').fadeIn();
         showRasterLayer('slr_1');
+        hideRasterLayer('slr_2');
         grid({init: getArray(1)});
         $('#counter').css('bottom','5%');
         $('#counter p').html('1');
         $('.wave, .wave2').css('bottom','0%');
         updateDD('1');
+
     } else if ((height  > getPosition('marker4')) && (height  < getPosition('marker5'))) {
         showRasterLayer('slr_2');
         hideRasterLayer('slr_3');
