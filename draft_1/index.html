@@ -36,12 +36,23 @@
     box-shadow:0 0 1vw rgba(0,0,0,0.2);
     }
     .title {
-        font-size:40px;
         line-height:1;
-        padding-top:20px;
         background:white;
     }
-
+    .title h1 {
+        font-size:40px;
+        padding-top:20px;
+    }
+    .title h1, .title p, .title h3 {
+        box-shadow:none;
+    }
+    .title h3 {
+        padding-bottom: 20px;
+    }
+    .title h3 span {
+        font-size:30px;
+        padding-right:20px;
+    }
     #map {
         position:fixed;
         top:0; bottom:0;
@@ -53,7 +64,7 @@
     }
     #scrolling-container {
       z-index:550;
-      width:30vw;
+      width:25vw;
       margin:25vh 0 10vh 15vw;
       height:500vh;
       position: relative;
@@ -83,13 +94,8 @@
     }
 
     .left_panel_boxes{
-    padding:2%;
-    margin:5%;
-    width: 85%;
-    box-shadow:0 0 1vw rgba(0,0,0,0.2);
-    background: rgba(255,255,255,0.75);
-
-    font-size:10px;
+    width: 13vw;
+    font-size:12px;
 }
 #stats_left{
      width: 85%;
@@ -180,7 +186,9 @@
     margin:2px;
     display: inline;
     font-weight: bold;
-    padding:0.5vw;
+    padding:0.5vw;    
+    border-radius: 10px;
+
 
 }
 .scenarios p:nth-of-type(1), .greenBG {
@@ -327,7 +335,10 @@
     </div>
     <div id='scrolling-container'>
             <div class="short-break"></div>
-            <h1 class="title" id="marker1">Here Today,<br>Gone Tomorrow.</h1>
+            <div class="title" id="marker1"><h1>Here Today,<br>Gone Tomorrow.</h1>
+                <p>By Some Folks</p>
+                <h3><span>⇣</span>Scroll to Start</h3>
+            </div>
             <div class="long-break"></div>
                 <p>Louisiana's Gulf coast is a site of incredible biodiversity, natural beauty, and economic activity--all of which relies on a stable ecosystem. This ecosystem has recovered from numerous disruptions, ranging from the rebound in the wake of Hurricane Katrina to the revitalization of several near-extinct species.</p>
                 <p>But facing the coast is a challenge from which recovery may not be possible -- sea level rise. Fueled by climate change, the ever-increasing waterline threatens the fragile biodiversity unique to the Mississippi River Delta. Louisiana's coastal region is a sensitive and critical habtiat for a variety of species:</p>
@@ -502,8 +513,8 @@ const heatmap_vars = {
                 ["linear"],
                 ["heatmap-density"],
                 0, "rgba(117,107,177,0)",
-                0.1, "rgb(7,92,117)",
-                1, "rgb(255,255,255)"
+                0.1, "rgba(255,255,255,0.1)",
+                1, "rgba(255,255,255,0.75)"
             ],
             // Adjust the heatmap radius by zoom level
             "heatmap-radius": [
@@ -657,28 +668,30 @@ map.on('load', function() {
 
 });
 
+var rows_num = 24;
+var cols_num = 10;
 function getArray(slr_level){
   const values = []
   if(slr_level == 0){
 
-  for(let row =0; row<24;row++){
+  for(let row =0; row<rows_num;row++){
     let valueArray = [];
-    for(let column =0; column<10;column++){
+    for(let column =0; column<cols_num;column++){
      valueArray.push(0);
     }
     values.push(valueArray);
     }
 
   } else {
-  for(let row =0; row<24;row++){
+  for(let row =0; row<rows_num;row++){
 
     let valueArray = [];
-    for(let column =0; column<10;column++){
-      if (.5<pixel_data[row*10 + column][slr_level]/pixel_data[row*10 + column]["ORIGINAL AREA"] && pixel_data[row*10 + column][slr_level]/pixel_data[row*10 + column]["ORIGINAL AREA"]<.99)
+    for(let column =0; column<cols_num;column++){
+      if (.5<pixel_data[row*cols_num + column][slr_level]/pixel_data[row*cols_num + column]["ORIGINAL AREA"] && pixel_data[row*cols_num + column][slr_level]/pixel_data[row*cols_num + column]["ORIGINAL AREA"]<.99)
         valueArray.push(1);
-      else if ((pixel_data[row*10 + column][slr_level]/pixel_data[row*10 + column]["ORIGINAL AREA"])<=.5)
+      else if ((pixel_data[row*cols_num + column][slr_level]/pixel_data[row*cols_num + column]["ORIGINAL AREA"])<=.5)
         valueArray.push(0);
-      else if (pixel_data[row*10 + column][slr_level]/pixel_data[row*10 + column]["ORIGINAL AREA"]>=.99)
+      else if (pixel_data[row*cols_num + column][slr_level]/pixel_data[row*cols_num + column]["ORIGINAL AREA"]>=.99)
         valueArray.push(2);
     }
 
