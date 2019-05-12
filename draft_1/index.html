@@ -96,7 +96,11 @@
     .left_panel_boxes{
     width: 13vw;
     font-size:12px;
-}
+    }
+    h3.left_panel_boxes {
+        background: none;
+        box-shadow: none;
+    }
 #stats_left{
      width: 85%;
      display:flex;
@@ -237,14 +241,17 @@
     background-color:white;
     font-weight: bold;
     text-align: center;
-    padding:5px 20px;
+    padding:15px 20px;
     border-radius:20px;
     transition: 250ms all;
     box-shadow:0 0 1vw rgba(0,0,0,0.2);
 }
 .show_active {
     background-color: #FF5E57;
-
+}
+.show img {
+    width:14%;
+    transform: translateY(41%);
 }
 .mapboxgl-popup-content h2 {
     box-shadow:none;
@@ -342,10 +349,10 @@
             <div class="long-break"></div>
                 <p>Louisiana's Gulf coast is a site of incredible biodiversity, natural beauty, and economic activity--all of which relies on a stable ecosystem. This ecosystem has recovered from numerous disruptions, ranging from the rebound in the wake of Hurricane Katrina to the revitalization of several near-extinct species.</p>
                 <p>But facing the coast is a challenge from which recovery may not be possible -- sea level rise. Fueled by climate change, the ever-increasing waterline threatens the fragile biodiversity unique to the Mississippi River Delta. Louisiana's coastal region is a sensitive and critical habtiat for a variety of species:</p>
-                <div id="bird_env" class="show show_active">birds</div>
-                <div id="fish_env" class="show">fish</div>
-                <div id="invert_env" class="show">invertebrates</div>
-            <div class = "short-break", id = "marker2">
+                <div id="bird_env" class="show show_active"><img src="img/bird.png"></div>
+                <div id="fish_env" class="show"><img src="img/fish.png"></div>
+                <div id="invert_env" class="show"><img src="img/shrimp.png"></div>
+            <div class = "short-break", id = "marker2"></div>
                 <p>And all these homes are threatened by the same thing, sea level rise. This page illustrates how and when changing sea levels will impact animal habitat and the people living along the Louisiana coast. Each block on the left represents a local animal's habitat and will fade as that habitat is displaced. Hover over it to see more information.</p>
             <div class="long-break"></div>
             <h1 id = "marker3">Onward and Upward - One Foot Higher</h1>
