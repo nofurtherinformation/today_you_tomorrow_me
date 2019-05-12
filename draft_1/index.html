@@ -350,7 +350,7 @@
             </div>
             <div class="long-break"></div>
                 <p>Louisiana's Gulf coast is a site of incredible biodiversity, natural beauty, and economic activity--all of which relies on a stable ecosystem. This ecosystem has recovered from numerous disruptions, ranging from the rebound in the wake of Hurricane Katrina to the revitalization of several near-extinct species.</p>
-                <p>But facing the coast is a challenge from which recovery may not be possible -- sea level rise. Fueled by climate change, the ever-increasing waterline threatens the fragile biodiversity unique to the Mississippi River Delta. Louisiana's coastal region is a sensitive and critical habtiat for a variety of species:</p>
+                <p>But facing the coast is a challenge from which recovery may not be possible -- sea level rise. Fueled by climate change, the ever-increasing waterline threatens the fragile biodiversity unique to the Mississippi River Delta. Louisiana's coastal region is a sensitive and critical habitat for a variety of species:</p>
                 <div id="bird_env" class="show show_active"><img src="img/bird.png"></div>
                 <div id="fish_env" class="show"><img src="img/fish.png"></div>
                 <div id="invert_env" class="show"><img src="img/shrimp.png"></div>
@@ -602,7 +602,111 @@ map.on('load', function() {
             }
         })
     };
+    // map.addLayer({
+    //     'id':'invert_env_outline',
+    //     'type': 'line',
+    //     'source': {
+    //         'type': 'geojson',
+    //         'data': invert_env
+    //     },
+    //     "layout": {
+    //         "line-join": "round",
+    //         "line-cap": "round",
+    //         // "visibility":"none"
+    //     },
+    //     "paint": {
+    //         "line-color":"#68915b",
+    //         "line-width": 2
+    //     }
+    // })
+    // map.addLayer({
+    //     'id':'bird_env_outline',
+    //     'type': 'line',
+    //     'source': {
+    //         'type': 'geojson',
+    //         'data': bird_env
+    //     },
+    //     "layout": {
+    //         "line-join": "round",
+    //         "line-cap": "round",
+    //         // "visibility" :"none"
+    //     },
+    //     "paint": {
+    //         "line-color":"#68915b",
+    //         "line-width": 2
+    //     }
+    // })
+    // map.addLayer({
+    //     'id':'fish_env_outline',
+    //     'type': 'line',
+    //     'source': {
+    //         'type': 'geojson',
+    //         'data': invert_env
+    //     },
+    //     "layout": {
+    //         "line-join": "round",
+    //         "line-cap": "round",
+    //         // "visibility": "none"
+    //     },
+    //     "paint": {
+    //         "line-color": "#68915b",
+    //         "line-width": 2
+    //     }
+    // })
+    // map.addLayer({
+    //     "id": "habitats",
+    //     "type": "fill",
 
+    map.addLayer({
+        'id':'invert_env_outline',
+        'type': 'fill',
+        'source': {
+            'type': 'geojson',
+            'data': invert_env
+        },
+        "layout": {
+            "visibility":"none"
+        },
+        "paint":{
+             "fill-opacity":0.6,
+           "fill-color":"#68915b",
+           "fill-outline-color":"#68915b"
+        }
+    })
+  map.addLayer({
+        'id':'bird_env_outline',
+        'type': 'fill',
+        'source': {
+            'type': 'geojson',
+            'data': bird_env
+        },
+        "layout": {
+            "visibility":"none"
+        },
+        "paint":{
+             "fill-opacity":0.6,
+           "fill-color":"#68915b",
+           "fill-outline-color":"#68915b"
+        }
+    })  
+    map.setFilter('bird_env_outline', ['!=', 'Louisian_2', 'pelagic']);  
+  map.addLayer({
+        'id':'fish_env_outline',
+        'type': 'fill',
+        'source': {
+            'type': 'geojson',
+            'data': fish_env
+        },
+        "layout": {
+           
+            "visibility":"none"
+        },
+        "paint":{
+             "fill-opacity":0.6,
+           "fill-color":"#68915b",
+           "fill-outline-color":"#68915b"
+        }
+    })
     map.addLayer({
         'id':'invert_env',
         'type': 'heatmap',
