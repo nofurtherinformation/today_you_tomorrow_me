@@ -268,11 +268,28 @@
     color: rgba(0,128,128,0.4);
 
 }
+#gridImg {
+    position: fixed;
+    top:10vh;
+    left:20vw;
+    width:400px;
+    height:400px;
+    z-index:600;
+    background-size:contain;
+    background-repeat:no-repeat;
+}
+#pixel_viz rect:hover {
+    stroke: white;
+    stroke-width: 2px;
+    box-shadow:0px 0px 3px rgba(0,0,0,0.2);
+}
 </style>
 </head>
 <body>
     <div id='map'></div>
     <div id='left_panel'>
+        
+        <div id="gridImg"></div>
         <div id = "stats_left">
         <div class = "left_panel_boxes"><h3 style = "background-color: transparent; box-shadow:none;padding-bottom:0%">Species Remaining</h3><div  id="pixel_viz"><svg id = "svg"> </svg></div></div>
 
@@ -738,10 +755,13 @@ function grid (config) {
     .join("rect")
       .attr("x", d => d.x*(size + 2*margin) + margin)
       .attr("y", d => d.y*(size + 2*margin) + margin)
+      .attr("id", d => rectData.indexOf(d))
       .attr("stroke", outline)
       .attr("width", size)
       .attr("height", size)
-      .attr("fill", d => colorArray[state[d.y][d.x]]);
+      .attr("fill", d => colorArray[state[d.y][d.x]])
+      .on('mouseover', handleMouseOver)
+      .on("mouseout", handleMouseOut);
   el.addEventListener('inputArray', ({detail}) => {
     if (detail !== null && detail !== undefined) {
       if (detail.length === ny &&
@@ -766,7 +786,15 @@ function getRandomInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
+function handleMouseOver(){
+    getGridImg(pixel_data[this.id].SPECIES);
+}
+function handleMouseOut(){
+    $('#gridImg').css('background-image','none');
+}
+$('rect').mouseout(function(){
+    $('#gridImg').css('background-image','none');
+})
 function getPosition(marker) { // gets the position roughly when the marker enters the frame
     return ($(`#${marker}`).offset().top-760)
 }
@@ -803,6 +831,17 @@ function getImg(term){
     let item = data.photos.photo[Math.floor(Math.random()*Object.keys(data.photos.photo).length)];
     let src = "http://farm"+ item.farm +".static.flickr.com/"+ item.server +"/"+ item.id +"_"+ item.secret +"_m.jpg";
     $("<img/>").attr("src", src).appendTo(".mapboxgl-popup-content");
+  });
+};
+function getGridImg(term){  
+   $("#gridImg").html(`<h3>${term}</h3>`);
+  let TAGS = term.split(' ').join('+');
+  let url = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=" + API_KEY + "&tags=" + TAGS + "&safe_search=1&per_page=200";
+  $.getJSON(url + "&format=json&jsoncallback=?", function(data){
+    let item = data.photos.photo[Math.floor(Math.random()*Object.keys(data.photos.photo).length)];           
+    let src = "http://farm"+ item.farm +".static.flickr.com/"+ item.server +"/"+ item.id +"_"+ item.secret +"_m.jpg";
+    $("#gridImg").css('background-image',`url(${src})`);
+    
   });
 };
 
