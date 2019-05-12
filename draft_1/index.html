@@ -765,46 +765,20 @@ function getArray(slr_level){
 
 function grid (config) {
     /*
-    * CREDIT FOR GRID TO @bryangingechen on Observable.
+    * ADAPTED from the "Grid input" notebook by @bryangingechen on Observable.
     */
 
 
-  // defaults
   config = Object.assign({size:document.getElementById("pixel_viz").offsetWidth/17, numStates:3, margin:2, outline:'transparent'}, config);
   let {nx, ny, size, numStates, init, margin, colorArray, outline} = config;
 
-  // validate init: this is horrible...
-  if (init !== undefined) {
-    if (init.some(d => d.length !== init[0].length) ||
-        init.some(d => d.some(v => v<0 || v >= numStates || v != Math.round(v))))
-      throw new Error(`init should be undefined or a rectangular matrix with integer entries between 0 and ${numStates-1}`);
-    if (nx === undefined && ny !== undefined) {
-      if (ny === init.length)
-        nx = init[0].length;
-      else throw new Error(`init length:${init.length} not equal to ny:${ny}`);
-    } else if (ny === undefined && nx !== undefined) {
-      if (nx === init[0].length)
-        ny = init.length;
-      else throw new Error(`init inner length:${init[0].length} not equal to nx:${nx}`);
-    }
-    else if (nx === undefined && ny === undefined) {
+    if (init!==undefined) {
       ny = init.length;
       nx = init[0].length;
-    }
-  } else {
-    if (nx === undefined && ny !== undefined)
-      nx = ny;
-    else if (ny === undefined && nx !== undefined)
-      ny = nx;
-    else if (nx === undefined && ny === undefined)
-      ny = nx = 5;
   }
 
-
-  colorArray =  ["#68915b","#9fbc96", "transparent"];
-
-  // Array of values, start out all 0 if init not defined
-  const state = init ? init.map(d => d.slice()) : Array.from({length:ny}, d => Array(nx).fill(0));
+  // Array of values, start out all 1 if init not defined -- useful for testing
+  const state = init ? init.map(d => d.slice()) : Array.from({length:ny}, d => Array(nx).fill(1));
 
   const svg = d3.select("#svg").attr("width",nx*(size+2*margin)).attr("height", ny*(size+2*margin));
 
@@ -865,7 +839,8 @@ function updateGrid(init){
      g.selectAll("rect")
       .data(rectData)
       .transition()
-      .duration(getRandomInt(50,400))
+      .duration(getRandomInt(50,500))
+      .ease(d3.easeLinear)
       .attr("fill", d => colorArray[state[d.y][d.x]]);
 
 }
