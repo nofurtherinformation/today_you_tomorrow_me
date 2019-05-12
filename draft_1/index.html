@@ -35,7 +35,7 @@
 
     box-shadow:0 0 1vw rgba(0,0,0,0.2);
     }
-    #title {
+    .title {
         font-size:40px;
         line-height:1;
         padding-top:20px;
@@ -70,7 +70,7 @@
         opacity:0;
     }
     .long-break {
-        height:50vh;
+        height:75vh;
     }
     .short-break {
         height:10vh;
@@ -180,9 +180,11 @@
     margin:2px;
     display: inline;
     font-weight: bold;
+    padding:0.5vw;
+
 }
 .scenarios p:nth-of-type(1), .greenBG {
-    background:#57FF98;
+    background:rgb(216,148,153);
 }
 
 .scenarios p:nth-of-type(1)::before {
@@ -190,14 +192,14 @@
     font-weight: 200;
 }
 .scenarios p:nth-of-type(2), .yellowBG {
-    background:#FFE257;
+    background:rgb(192,79,94);
 }
 .scenarios p:nth-of-type(2)::before {
     content: 'middle: ';
     font-weight: 200;
 }
 .scenarios p:nth-of-type(3), .redBG {
-    background:#FF5E57;
+    background:rgb(165,35,63);
 }
 .scenarios p:nth-of-type(3)::before {
     content: 'worst: ';
@@ -257,6 +259,9 @@
     font-size:20px;
 }
 #vertical-text {
+    height: 100vh;
+    text-align: center;
+    letter-spacing:10px;
     writing-mode: tb-rl;
     transform: rotate(-180deg);
     transform-origin: 0 left;
@@ -266,7 +271,7 @@
     padding:2%;
     margin:0%;
     font-size: 20px;
-    color: rgba(0,128,128,0.4);
+    color: rgba(0,0,0,0.5);
 
 }
 #gridImg {
@@ -281,10 +286,18 @@
 #gridImg h3 {
     margin-top: -3vh;
 }
+#pixel_viz rect {
+    stroke:rgba(0,0,0,0.5);
+    stroke-width:0.5px;
+}
 #pixel_viz rect:hover {
     stroke: white;
     stroke-width: 2px;
     box-shadow:0px 0px 3px rgba(0,0,0,0.2);
+    cursor: cell;
+}
+#pixel_viz:hover {
+    cursor: cell;
 }
 </style>
 </head>
@@ -314,9 +327,8 @@
     </div>
     <div id='scrolling-container'>
             <div class="short-break"></div>
-            <h1 id="title">Here Today,<br>Gone Tomorrow.</h1>
+            <h1 class="title" id="marker1">Here Today,<br>Gone Tomorrow.</h1>
             <div class="long-break"></div>
-            <h1 id="marker1"></h1>
                 <p>Louisiana's Gulf coast is a site of incredible biodiversity, natural beauty, and economic activity--all of which relies on a stable ecosystem. This ecosystem has recovered from numerous disruptions, ranging from the rebound in the wake of Hurricane Katrina to the revitalization of several near-extinct species.</p>
                 <div class="short-break" id="marker2"></div>
                 <p>But facing the coast is a challenge from which recovery may not be possible -- sea level rise. Fueled by climate change, the ever-increasing waterline threatens the fragile biodiversity unique to the Mississippi River Delta. Louisiana's coastal region is a sensitive and critical habtiat for a variety of species:</p>
@@ -329,15 +341,15 @@
                 <p>This page illustrates how and when changing sea levels will impact animal habitat and the people living along the Louisiana coast. Each block on the left represents a local animal's habitat and will fade as that habitat is displaced. Hover over it to see more information.</p>
                 <div class="short-break"></div>
             <h1 id="marker3">Onward and Upward - One Foot Higher</h1>
-                <p>In the best case scenario, a one-foot sea level rise won't happen until 2030, but in the worst case scenario, we're there next year. In the intermediate case, we'll get there around 2025.</p>
                 <div class="scenarios">
                     <p>2030</p>
                     <p>2020</p>
                     <p>2025</p>
                 </div>
-                <div class="short-break"></div>
+                <p>In the best case scenario, a one-foot sea level rise won't happen until 2030, but in the worst case scenario, we're there next year. In the intermediate case, we'll get there around 2025.</p>
+                
                 <p>With only a one foot sea level increase, a dramatic chunk of Louisiana's low-lying coastal habitat is immediately lost. Nearly 70% of local bird habitats, 89% of fish habitats, and 96% of invertebrate habitats may be gone. Louisiana is also home to a small number of reptiles and mammals; the pockets of land these species occupy will be wiped out. Many animals may be able to move inland in response. However, species with breeding grounds in these areas and those that require specific salinities are particularly at risk.</p>
-                <div class="short-break"></div>
+                <div class="long-break"></div>
                 <h1 id="marker4">Two-feet Rise</h1>
                 <div class="scenarios">
                     <p>2050</p>
@@ -346,7 +358,6 @@
                 </div>
                 <div class="short-break"></div>
                 <p>The piping plover, a shorebird making its home here on the Gulf coast, is one of these vulnerable species. Recent counts of the bird across the entire U.S. place its population around 6,500. These plovers keep the beaches clean of bugs and small crustacians, allowing for our own enjoyment of the waterfront landscape.</p>
-                <img src="https://media.giphy.com/media/3o8dpc4MgG9i3VDvDq/giphy.gif">
                 <div class="short-break"></div>
             <h1 id="marker5">Three-feet Rise</h1>
                 <div class="scenarios">
@@ -473,8 +484,8 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGhhbHBlcm4iLCJhIjoiY2pvMnliandsMHJsbTNwcGhlN
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/dhalpern/cju007aoj560k1gplfbhlc9ft', // our map style
-    center: [-91.167895, 30.179239], // gulf coast area
-    zoom: 8, // regional scale zoom
+    center: [-91.9736877, 30.179239], // gulf coast area
+    zoom: 7.5, // regional scale zoom
     interactive:false
 });
 
@@ -612,18 +623,6 @@ map.on('load', function() {
         "paint": heatmap_vars
     })
     map.addLayer({
-        'id':'reptile_env',
-        'type': 'heatmap',
-        'source': {
-            'type': 'geojson',
-            'data': reptile_env
-        },
-        'layout': {
-            'visibility':'none'
-        },
-        "paint": heatmap_vars
-    })
-    map.addLayer({
         'id':'fish_env',
         'type': 'heatmap',
         'source': {
@@ -740,7 +739,7 @@ function grid (config) {
       ny = nx = 5;
   }
 
-    colorArray = ["#0074e7", "#72b9ff", "#DCDCDC"];
+    colorArray = ["#000000", "#BCBCBC", "#ffffff"];
 
   // Array of values, start out all 0 if init not defined
   const state = init ? init.map(d => d.slice()) : Array.from({length:ny}, d => Array(nx).fill(0));
@@ -810,7 +809,9 @@ function getPosition(marker) { // gets the position roughly when the marker ente
 }
 
 function hideLayer(layer){ // layer must be passed as a string in quotes
+    map.setLayoutProperty(layer, 'visibility', 'none');
     map.setPaintProperty(layer, 'fill-opacity', 0); // setting the CSS property of the SVG to 0, hiding it
+    
 };
 
 function showLayer(layer, opacity){ // layer must be passed as a string in quotes
@@ -867,9 +868,17 @@ $('.show').mouseover(function(){
     showRasterLayer(this.id);
 })
 $(window).scroll(function() { // whenever the page scrolls
-    var height = $(window).scrollTop(); // current position
+    var height = $(window).scrollTop()+300; // current position
+    if (height == 0) {
+        
+        updateDD('0');
 
-    if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {
+        hideRasterLayer('bird_env');
+        hideRasterLayer('fish_env');
+        hideRasterLayer('invert_env');
+
+
+    } else if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {
 
         grid({init: getArray(0)});
         updateDD('0');
