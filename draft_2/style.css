@@ -8,11 +8,19 @@
         font-family: 'Assistant',
         sans-serif;
     }
-    h1, h2, h3, h4, h5, h6 {
+    h1, h2, h3, h4, h5, h6, div.container {
         font-family: 'Vesper Libre', serif;
         padding:0 20px;
         background: white;
         box-shadow:0 0 1vw rgba(0,0,0,0.2);
+    }
+    div.container h1, div.container p {
+        background: none;
+        box-shadow:none;
+        margin-bottom:0;
+    }
+    div.container p {
+        margin-bottom:1rem;
     }
     p {
         padding:20px;
@@ -175,7 +183,7 @@
 }
 .scenarios p {
     width:5vw;
-    margin:2px;
+    margin:0 0.1rem 1rem 0.1rem;
     display: inline;
     font-weight: bold;
     padding:0.5vw;
@@ -184,7 +192,7 @@
 
 }
 .scenarios p:nth-of-type(1), .greenBG {
-    background:rgb(216,148,153);
+    color:rgb(216,148,153);
 }
 
 .scenarios p:nth-of-type(1)::before {
@@ -192,14 +200,14 @@
     font-weight: 200;
 }
 .scenarios p:nth-of-type(2), .yellowBG {
-    background:rgb(192,79,94);
+    color:rgb(192,79,94);
 }
 .scenarios p:nth-of-type(2)::before {
     content: 'average: ';
     font-weight: 200;
 }
 .scenarios p:nth-of-type(3), .redBG {
-    background:rgb(165,35,63);
+    color:rgb(165,35,63);
 }
 .scenarios p:nth-of-type(3)::before {
     content: 'worst: ';
