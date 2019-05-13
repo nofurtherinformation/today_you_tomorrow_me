@@ -487,9 +487,6 @@
                   <div class = "short-break"></div>
     </div>
     <div id="overlay"></div>
-    <video id="video_overlay" autoplay muted loop>
-            <source src="img/closing_video.mp4" type="video/mp4">
-    </video>
 <script>
 var dd;
 const displacement_data = d3.csv('summary_human_displacement.csv').then(function(data){
@@ -689,7 +686,7 @@ map.on('load', function() {
         closeOnClick: true
         });
 
-    map.on('mouseover', 'slr_6_loss', function(e) {
+    map.on('mouseover', 'habitats', function(e) {
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = 'pointer';
 
@@ -795,7 +792,7 @@ function grid (config) {
       .attr("width", size)
       .attr("height", size)
       .attr("fill", d => colorArray[state[d.y][d.x]])
-      .on('mouseover', handleMouseOver)
+      .on("mouseover", handleMouseOver)
       .on("mouseout", handleMouseOut);
   el.addEventListener('inputArray', ({detail}) => {
     if (detail !== null && detail !== undefined) {
@@ -844,13 +841,14 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 function handleMouseOver(){
-    if (slr_num == 0){
-      let loss = 0;
-    }else {
-      loss = ((pixel_data[this.id][slr_num])/(pixel_data[this.id]["ORIGINAL AREA"])*100).toFixed(0);
-    };
-    $("#gridImg").html(`<h3>${pixel_data[this.id].SPECIES}<br>${loss}% loss</h3>`);
-    $('#gridImg').fadeIn();
+    console.log('test')
+    // if (slr_num == 0){
+    //   let loss = 0;
+    // } else {
+    //   let loss = ((pixel_data[this.id][slr_num])/(pixel_data[this.id]["ORIGINAL AREA"])*100).toFixed(0);
+    // };
+    // $("#gridImg").html(`<h3>${pixel_data[this.id].SPECIES}<br>${loss}% loss</h3>`);
+    // $('#gridImg').fadeIn();
 }
 function handleMouseOut(){
     $('#gridImg').css('background-image','none');
@@ -986,7 +984,6 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#counter').css('bottom','13%')
         $('.wave, .wave2').css('bottom','10%');
         $('.wave_filler').css('height','10%');
-
         updateDD('2');
 
     } else if ((height > getPosition('marker5')) && (height  < getPosition('marker6'))) {
