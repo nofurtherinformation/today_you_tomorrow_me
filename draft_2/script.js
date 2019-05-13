@@ -1,4 +1,6 @@
 var dd;
+var pageX;
+var pageY;
 const displacement_data = d3.csv('summary_human_displacement.csv').then(function(data){
     dd = data;
 })
@@ -13,9 +15,7 @@ var pixel_data;
 const d = d3.csv("https://gist.githubusercontent.com/kat-wicks/f205e7ccfcc730c350237b8a7d3c30fa/raw/1995471ea33f31e7801770b080fd3cb218c4c977/slr_habitat_loss.csv",  (d, i, columns) => (d3.autoType(d))).then(function(data){
     pixel_data = data
 })
-
 const API_KEY = "ea61f3692f37cf92a8df83f3df1d9d9d";
-
 
 var slr_tiles = [
     {'name':'slr_0', 'url':'http://dev.dylanhalpern.com/slr/slr_00/'},
@@ -30,6 +30,11 @@ var slr_tiles = [
     {'name':'slr_9', 'url':'http://dev.dylanhalpern.com/slr/slr_09/'},
     {'name':'slr_10', 'url':'http://dev.dylanhalpern.com/slr/slr_10/'}
 ]
+
+$( document ).on( "mousemove", function( event ) {
+    pageX = event.clientX;
+    pageY = event.clientY;
+  });
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGhhbHBlcm4iLCJhIjoiY2pvMnliandsMHJsbTNwcGhlNWhqYzF3ZyJ9.g5FiNV9s5DXPt1RaE2wNyg';
 
@@ -515,8 +520,8 @@ function handleMouseOver(){
     }else {
       loss = ((pixel_data[this.id][slr_num])/(pixel_data[this.id]["ORIGINAL AREA"])*100).toFixed(0);
     };
-    $("#gridImg").html(`<h3>${pixel_data[this.id].SPECIES}<br>${loss}% loss</h3>`);
-    $('#gridImg').fadeIn();
+    $("#gridImg").css({'top':pageY,'left':pageX+20}).html(`<h3>${pixel_data[this.id].SPECIES}<br>${loss}% loss</h3>`);
+    $('#gridImg').fadeIn('slow');
     map.setFilter('habitats_line', ['==','Louisian_2',pixel_data[this.id].SPECIES]);
     map.setPaintProperty('habitats_line', 'line-opacity', 0.1);
     showRasterLayer('habitats_line');

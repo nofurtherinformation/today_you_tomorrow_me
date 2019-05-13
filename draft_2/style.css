@@ -297,7 +297,7 @@
     writing-mode: tb-rl;
     transform: rotate(-180deg);
     transform-origin: 0 left;
-    z-index: =500;
+    z-index: 500;
     background-color: transparent;
     box-shadow: none;
     padding:2%;
@@ -307,13 +307,12 @@
 
 }
 #gridImg {
-    height:20vh;
+    height:5vh;
     z-index:600;
-    background-size:contain;
-    background-repeat:no-repeat;
-    width:72.25%;
-    padding:0;
-    margin:7%;
+    width:10vw;
+    position:fixed;
+    transition:150ms all;
+    pointer-events: none;
 }
 #gridImg h3 {
     margin-top: -3vh;
