@@ -5,6 +5,10 @@ const displacement_data = d3.csv('summary_human_displacement.csv').then(function
     dd = data;
 })
 
+color = d3.scalePow()
+    .domain([0, 100])
+    .range(["rgba(107,147,94,0)","#68915b"]);
+
 //doesn't seem to work with CSV....
 // var pixel_data;
 // const px_data = d3.csv('HABITAT_LOSS_PERCENTAGES.csv').then(function(data){
@@ -302,7 +306,7 @@ const heatmap_vars = {
         // Populate the popup and set its coordinates
         // based on the feature found.
     popup.setLngLat(e.lngLat)
-        .setHTML(`<h2>${name}</h2><p>${la_name}</p>`)
+        .setHTML(`<h2>${name}</h2><p>${la_name}</p><img>`)
         .addTo(map);
         console.log(la_name)
         if (la_name != 'null') {
@@ -320,7 +324,7 @@ const heatmap_vars = {
         // Populate the popup and set its coordinates
         // based on the feature found.
     popup.setLngLat(e.lngLat)
-        .setHTML(`<h2>${name}</h2><p>${la_name}</p>`)
+        .setHTML(`<h2>${name}</h2><p>${la_name}</p><img>`)
         .addTo(map);
         console.log(la_name)
         if (la_name != 'null') {
@@ -338,7 +342,7 @@ const heatmap_vars = {
         // Populate the popup and set its coordinates
         // based on the feature found.
     popup.setLngLat(e.lngLat)
-        .setHTML(`<h2>${name}</h2><p>${la_name}</p>`)
+        .setHTML(`<h2>${name}</h2><p>${la_name}</p><img>`)
         .addTo(map);
         console.log(la_name)
         if (la_name != 'null') {
@@ -355,7 +359,7 @@ const heatmap_vars = {
         // Populate the popup and set its coordinates
         // based on the feature found.
     popup.setLngLat(e.lngLat)
-        .setHTML(`<h2>${name}</h2><p>${la_name}</p>`)
+        .setHTML(`<h2>${name}</h2><p>${la_name}</p><img>`)
         .addTo(map);
         console.log(la_name)
         if (la_name != 'null') {
@@ -440,7 +444,7 @@ function grid (config) {
   }
 
 
-  colorArray =  ["#68915b","#9fbc96", "transparent"];
+  colorArray =  ["transparent","#9fbc96","#68915b"];
 
   // Array of values, start out all 0 if init not defined
   const state = init ? init.map(d => d.slice()) : Array.from({length:ny}, d => Array(nx).fill(0));
@@ -460,15 +464,16 @@ function grid (config) {
     .selectAll("rect")
     .data(rectData)
     .join("rect")
+
       .attr("x", d => d.x*(size + 2*margin) + margin)
       .attr("y", d => d.y*(size + 2*margin) + margin)
       .attr("id", d => rectData.indexOf(d))
       .attr("stroke", outline)
       .attr("width", size)
       .attr("height", size)
-      .attr("fill", d => colorArray[state[d.y][d.x]])
       .on('mouseover', handleMouseOver)
-      .on("mouseout", handleMouseOut);
+      .on("mouseout", handleMouseOut)
+      .attr("fill", d=> color(((pixel_data[rectData.indexOf(d)][slr_num])/(pixel_data[rectData.indexOf(d)]["ORIGINAL AREA"])*100).toFixed(0)));
   el.addEventListener('inputArray', ({detail}) => {
     if (detail !== null && detail !== undefined) {
       if (detail.length === ny &&
@@ -480,7 +485,7 @@ function grid (config) {
       state = init ? init.map(d => d.slice()) : Array.from({length:ny}, d => Array(nx).fill(0));
     }
     el.value = state;
-    grid.attr("fill", d => colorArray[state[d.y][d.x]]);
+    grid.attr("fill", d=> color(((pixel_data[rectData.indexOf(d)][slr_num])/(pixel_data[rectData.indexOf(d)]["ORIGINAL AREA"])*100).toFixed(0)))
     el.dispatchEvent(new CustomEvent('input'));
   });
 
@@ -491,7 +496,7 @@ function grid (config) {
 function updateGrid(init){
 
     const state = init.map(d => d.slice());
-     colorArray = ["#68915b","#9fbc96", "transparent"];
+     colorArray = ["transparent","#9fbc96","#68915b"];
     const rectData = [];
       for (let y=0; y<init.length; y++){
         for (let x=0; x<init[0].length; x++){
@@ -505,7 +510,7 @@ function updateGrid(init){
       .data(rectData)
       .transition()
       .duration(getRandomInt(50,400))
-      .attr("fill", d => colorArray[state[d.y][d.x]]);
+      .attr("fill", d=> color(((pixel_data[rectData.indexOf(d)][slr_num])/(pixel_data[rectData.indexOf(d)]["ORIGINAL AREA"])*100).toFixed(0)));
 
 }
 
@@ -554,6 +559,66 @@ $('#left_panel').mouseleave(function(){
     showRasterLayer('habitats_line');
 
 })
+function data_icon_grid(num) {
+    
+    var data = new Array();
+    var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
+    var ypos = 1;
+    var width = $('#human_counter .left_panel_boxes').width()/10;
+    var height = $('#human_counter .left_panel_boxes').width()/10;
+    var counter= 0 ;
+    // iterate for rows 
+    for (var row = 0; row < num/10; row++) {
+        data.push( new Array() );
+
+        // iterate for cells/columns inside rows
+        for (var column = 0; column < 10; column++) {
+          if (counter <= num){ var color = "#000"} else { var color = "rgba(0,0,0,0)"}
+            data[row].push({
+                x: xpos,
+                y: ypos,
+                width: width,
+                height: height,
+                fill: color
+            })
+            // increment the x position. I.e. move it over by 50 (width variable)
+            xpos += width;
+            counter+=1;
+        }
+        // reset the x position after a row is complete
+        xpos = 1;
+        // increment the y position for the next row. Move it down 50 (height variable)
+        ypos += height; 
+    }
+    return data;
+}
+function draw_icon_grid(selector, num){
+    let path = (selector == "people") ? "M56.2,49c2.2-1.8,3.7-4.6,3.7-7.7c0-5.4-4.4-9.8-9.8-9.8c-5.4,0-9.8,4.4-9.8,9.8c0,3.1,1.4,5.9,3.7,7.7  c-5.1,2.4-8.7,7.5-8.7,13.5v6h29.8v-6C64.9,56.5,61.3,51.4,56.2,49z" :
+        (selector == "houses") ? "M95,52.915c0,2.326-0.672,3.725-2.492,3.97c-0.127,0.027-0.307,0.054-0.469,0.054h-9.832c0,0,0,22.416,0,31.229  c0,3.94-1.998,5.691-4.203,6.428c-0.365,0.11-0.703,0.221-1.039,0.276H23.502c-0.363-0.057-0.703-0.166-1.039-0.276  c-2.204-0.735-4.204-2.486-4.204-6.428c0-8.812,0-31.229,0-31.229s-8.93,0.055-10.275,0C5.804,56.858,5,55.437,5,52.916  c0-3.204,0.544-3.856,2.985-6.374c2.906-3.038,37.604-39.271,37.604-39.271s1.919-2.217,4.646-2.14  c2.751-0.078,4.618,2.14,4.618,2.14s8.177,8.783,16.921,18.062v-8.457c0,0,0.027-3.175,4.516-3.858  c0.521-0.082,1.117-0.111,1.766-0.111h1.039c0.623,0,1.221,0.029,1.736,0.111c4.521,0.654,4.545,3.858,4.545,3.858v22.712  c3.447,3.587,5.971,6.213,6.666,6.954C94.479,49.058,95,49.711,95,52.915z" : "M47.5,3.666C23.291,3.666,3.666,23.291,3.666,47.5S23.291,91.334,47.5,91.334S91.334,71.709,91.334,47.5  S71.709,3.666,47.5,3.666z M59.084,38.547h-7.189v-9.064h-8.788v8.695L57.518,51.76c1.045,0.984,1.566,2.285,1.566,3.902v11.463  c0,2.641-1.193,4.08-3.558,4.34v4.648h-5.901V71.52h-3.78v4.594h-5.899v-4.615c-2.678-0.105-4.029-1.553-4.029-4.373V55.662h7.19  v9.803h8.788v-9.434L37.482,42.389c-1.045-1.004-1.566-2.285-1.566-3.842V27.854c0-2.844,1.345-4.311,4.029-4.414v-4.66h5.899v4.648  h3.78v-4.648h5.901v4.703c2.364,0.258,3.558,1.688,3.558,4.311V38.547z"
+    let number = (selector == "value") ? (parseInt((num/2-1).toFixed(0))) : (parseInt((num/20000-1).toFixed(0)))
+    let scale = (selector == "people") ? 0.3 : 0.15
+    d3.select(`#${selector}_grid svg`).remove()
+    grid = d3.select(`#${selector}_grid`)
+      .append("svg")
+      .attr("width",$('#human_counter .left_panel_boxes').width())
+      .attr("height",$('#human_counter .left_panel_boxes').width()/100*(Math.ceil(number / 10) * 10)+20);
+    row = grid.selectAll(".row")
+      .data(data_icon_grid(number))
+      .enter().append("g")
+      .attr("class", "row");
+    column = row.selectAll(`.${selector}`)
+      .data(function(d) { return d; })
+      .enter().append("path")
+      .style('opacity',1)
+      .attr("d", path)
+      .style("transform", d=>`translate(${d.x}px,${d.y}px) scale(${scale})`)
+      .attr('class',`${selector}`)
+      .attr("width", '20px')
+      .attr("height", '20px')
+      .style("fill", '#68915b')
+   
+    
+  }
 function getPosition(marker) { // gets the position roughly when the marker enters the frame
     return ($(`#${marker}`).offset().top-760)
 }
@@ -583,6 +648,9 @@ function updateDD(slr){
     $('#dd_0').html(parseInt(dd[0][`${slr}`]).toLocaleString() + ' people');
     $('#dd_1').html(parseInt(dd[1][`${slr}`]).toLocaleString() + ' units');
     $('#dd_2').html(parseFloat(dd[2][`${slr}`]).toFixed(2)+' bn');
+    draw_icon_grid('people',parseInt(dd[0][`${slr}`]))
+    draw_icon_grid('houses',parseInt(dd[1][`${slr}`]))
+    draw_icon_grid('value',parseFloat(dd[2][`${slr}`]).toFixed(2))
 }
 
 function getImg(term){
@@ -591,7 +659,7 @@ function getImg(term){
   $.getJSON(url + "&format=json&jsoncallback=?", function(data){
     let item = data.photos.photo[Math.floor(Math.random()*Object.keys(data.photos.photo).length)];
     let src = "http://farm"+ item.farm +".static.flickr.com/"+ item.server +"/"+ item.id +"_"+ item.secret +"_m.jpg";
-    $("<img/>").attr("src", src).appendTo(".mapboxgl-popup-content");
+    $(".mapboxgl-popup-content img").attr("src", src);
   });
 };
 function getGridImg(term){
@@ -662,6 +730,7 @@ $(window).scroll(function() { // whenever the page scrolls
         // hideRasterLayer('invert_env');
     } else if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {
         $('#overlay').fadeOut();
+        $('rect').fadeOut();
         updateDD('0');
         // showRasterLayer('habitats');
         // hideRasterLayer('bird_env');
@@ -675,6 +744,7 @@ $(window).scroll(function() { // whenever the page scrolls
 
         updateGrid(getArray(0));
         updateDD('0');
+        $('rect').fadeOut();
     } else if ((height  > getPosition('marker3')) && (height  < getPosition('marker4'))) {
         hideRasterLayer('bird_env');
         hideRasterLayer('bird_env_line');
@@ -695,6 +765,7 @@ $(window).scroll(function() { // whenever the page scrolls
         map.setPaintProperty('habitats_line', 'line-opacity', 0.01);
         map.setFilter('habitats', ['>','OBJECTID',0]);
         map.setFilter('habitats_line', ['>','OBJECTID',0]);
+        $('rect').fadeIn();
 
     } else if ((height  > getPosition('marker4')) && (height  < getPosition('marker5'))) {
         showRasterLayer('slr_2');

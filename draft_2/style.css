@@ -96,6 +96,13 @@
     h3.left_panel_boxes {
         background: none;
         box-shadow: none;
+        text-align: center;
+        width:11vw;
+        margin-top:0;
+        margin-bottom:0;
+    }
+    #human_counter h3 {
+        margin-bottom:24px;
     }
 #stats_left{
      width: 85%;
@@ -275,9 +282,6 @@
 }
 #human_counter {
     width:13vw;
-    position: fixed;
-    left:0;
-    bottom:0;
     background:transparent;
     /*padding:0.25vh 0.25vw;*/
 }
@@ -289,6 +293,7 @@
 }*/
 #human_counter h3 span {
     font-size:20px;
+    line-height: 0.2;
 }
 #vertical-text {
     height: 100vh;
@@ -318,8 +323,6 @@
     margin-top: -3vh;
 }
 #pixel_viz rect {
-    stroke:rgba(0,0,0,0.5);
-    stroke-width:0.5px;
 }
 #pixel_viz rect:hover {
     stroke: white;
