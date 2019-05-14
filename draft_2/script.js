@@ -406,7 +406,7 @@ function getArray(slr_level){
 
 }
 
-function grid (config) {
+function grid(config){
     /*
     * CREDIT FOR GRID TO @bryangingechen on Observable.
     */
@@ -542,7 +542,11 @@ function handleMouseOver(){
 }
 function handleMouseOut(){
     $('#gridImg').css('background-image','none');
-
+}
+function handleIconMouseover(selector){
+    let text = (selector == "houses") ? "20,000 housing units" : (selector == "people") ? "20,000 people" : "2 billion USD"
+    $("#gridImg").css({'top':pageY,'left':pageX+20}).html(`<h3>${text}</h3>`);
+    $('#gridImg').fadeIn('slow');
 }
 $('#left_panel').mouseleave(function(){
     $('#gridImg').css('background-image','none');
@@ -573,7 +577,7 @@ function data_icon_grid(num) {
 
         // iterate for cells/columns inside rows
         for (var column = 0; column < 10; column++) {
-          if (counter <= num){ var color = "#000"} else { var color = "rgba(0,0,0,0)"}
+          if (counter <= num){ var color = "#68915b"} else { var color = "rgba(0,0,0,0)"}
             data[row].push({
                 x: xpos,
                 y: ypos,
@@ -596,26 +600,29 @@ function draw_icon_grid(selector, num){
     let path = (selector == "people") ? "M56.2,49c2.2-1.8,3.7-4.6,3.7-7.7c0-5.4-4.4-9.8-9.8-9.8c-5.4,0-9.8,4.4-9.8,9.8c0,3.1,1.4,5.9,3.7,7.7  c-5.1,2.4-8.7,7.5-8.7,13.5v6h29.8v-6C64.9,56.5,61.3,51.4,56.2,49z" :
         (selector == "houses") ? "M95,52.915c0,2.326-0.672,3.725-2.492,3.97c-0.127,0.027-0.307,0.054-0.469,0.054h-9.832c0,0,0,22.416,0,31.229  c0,3.94-1.998,5.691-4.203,6.428c-0.365,0.11-0.703,0.221-1.039,0.276H23.502c-0.363-0.057-0.703-0.166-1.039-0.276  c-2.204-0.735-4.204-2.486-4.204-6.428c0-8.812,0-31.229,0-31.229s-8.93,0.055-10.275,0C5.804,56.858,5,55.437,5,52.916  c0-3.204,0.544-3.856,2.985-6.374c2.906-3.038,37.604-39.271,37.604-39.271s1.919-2.217,4.646-2.14  c2.751-0.078,4.618,2.14,4.618,2.14s8.177,8.783,16.921,18.062v-8.457c0,0,0.027-3.175,4.516-3.858  c0.521-0.082,1.117-0.111,1.766-0.111h1.039c0.623,0,1.221,0.029,1.736,0.111c4.521,0.654,4.545,3.858,4.545,3.858v22.712  c3.447,3.587,5.971,6.213,6.666,6.954C94.479,49.058,95,49.711,95,52.915z" : "M47.5,3.666C23.291,3.666,3.666,23.291,3.666,47.5S23.291,91.334,47.5,91.334S91.334,71.709,91.334,47.5  S71.709,3.666,47.5,3.666z M59.084,38.547h-7.189v-9.064h-8.788v8.695L57.518,51.76c1.045,0.984,1.566,2.285,1.566,3.902v11.463  c0,2.641-1.193,4.08-3.558,4.34v4.648h-5.901V71.52h-3.78v4.594h-5.899v-4.615c-2.678-0.105-4.029-1.553-4.029-4.373V55.662h7.19  v9.803h8.788v-9.434L37.482,42.389c-1.045-1.004-1.566-2.285-1.566-3.842V27.854c0-2.844,1.345-4.311,4.029-4.414v-4.66h5.899v4.648  h3.78v-4.648h5.901v4.703c2.364,0.258,3.558,1.688,3.558,4.311V38.547z"
     let number = (selector == "value") ? (parseInt((num/2-1).toFixed(0))) : (parseInt((num/20000-1).toFixed(0)))
+    console.log(number)
     let scale = (selector == "people") ? 0.3 : 0.15
     d3.select(`#${selector}_grid svg`).remove()
     grid = d3.select(`#${selector}_grid`)
       .append("svg")
       .attr("width",$('#human_counter .left_panel_boxes').width())
-      .attr("height",$('#human_counter .left_panel_boxes').width()/100*(Math.ceil(number / 10) * 10)+20);
+      .attr("height",$('#human_counter .left_panel_boxes').width()/100*Math.ceil(number / 10) * 10+25);
     row = grid.selectAll(".row")
       .data(data_icon_grid(number))
       .enter().append("g")
       .attr("class", "row");
-    column = row.selectAll(`.${selector}`)
+    column = row.selectAll(`.icon`)
       .data(function(d) { return d; })
       .enter().append("path")
       .style('opacity',1)
       .attr("d", path)
       .style("transform", d=>`translate(${d.x}px,${d.y}px) scale(${scale})`)
-      .attr('class',`${selector}`)
+      .attr('class',`icon`)
       .attr("width", '20px')
       .attr("height", '20px')
-      .style("fill", '#68915b')
+      .style("fill", d=>d.fill);
+    //   .on('mouseover', handleIconMouseover(selector))
+    //   .on('mouseout', handleIconMouseout)
    
     
   }
@@ -674,46 +681,7 @@ function getGridImg(term){
   });
 };
 
-$(document).ready(function(){
-    $(window).scrollTop(0);
-    $('#stickyButtons').fadeOut();
-    $('#video_overlay').fadeOut();
-    $('#slr_meter').fadeOut();
-    grid({init: getArray(0)});
-})
-$('.show').click(function(){
-    hideRasterLayer('bird_env');
-    hideRasterLayer('invert_env');
-    hideRasterLayer('fish_env');
-    hideRasterLayer('bird_env_line');
-    hideRasterLayer('invert_env_line');
-    hideRasterLayer('fish_env_line');
-    hideRasterLayer('habitats');
-    hideRasterLayer('habitats_line');
-    $('.show').removeClass('show_active');
-    $(this).addClass('show_active');
-    if (map.getLayer($(`#${this.id}`).attr('alt')).visibility == "none") {
-    showRasterLayer($(`#${this.id}`).attr('alt'));
-    showRasterLayer($(`#${this.id}`).attr('alt')+'_line');
-    } else {
-        hideRasterLayer($(`#${this.id}`).attr('alt'));
-        hideRasterLayer($(`#${this.id}`).attr('alt')+'_line');
-    }
-})
-$('#stickyButtons .button').click(function(){
-    hideRasterLayer('habitats');
-    hideRasterLayer('habitats_line');
-    $(this).toggleClass('button_active');
-    if (map.getLayer($(`#${this.id}`).attr('alt')).visibility == "none") {
-    showRasterLayer($(`#${this.id}`).attr('alt'));
-    showRasterLayer($(`#${this.id}`).attr('alt')+'_line');
-    } else {
-        hideRasterLayer($(`#${this.id}`).attr('alt'));
-        hideRasterLayer($(`#${this.id}`).attr('alt')+'_line');
-    }
-})
-
-$(window).scroll(function() { // whenever the page scrolls
+function scroll_check() { // whenever the page scrolls
     var height = $(window).scrollTop()+300; // current position
     if (($(window).scrollTop()) > ($('#fish_env').offset().top)) {
             $('#stickyButtons').fadeIn();
@@ -721,6 +689,16 @@ $(window).scroll(function() { // whenever the page scrolls
     } else {
         $('#stickyButtons').fadeOut();
     }
+    if (($(window).scrollTop()+300)>getPosition('marker1')) {
+        $('#overlay').fadeOut();
+    }
+    if (($(window).scrollTop()+300)<getPosition('marker14')){
+        $('#video_overlay').fadeOut()
+    }
+    if (($(window).scrollTop()+300)>getPosition('marker4')){
+        $('rect').fadeIn();
+    }
+
     if (height == 300) {
         $('#overlay').css('background-image','url("img/bg.jpg")').fadeIn();
         updateDD('0');
@@ -918,4 +896,49 @@ $(window).scroll(function() { // whenever the page scrolls
         $('#stickyButtons').css('opacity','0');
     } else {
     }
+}
+
+$(document).ready(function(){
+    grid({init: getArray(0)});
+    $('#stickyButtons').fadeOut();
+    $('#video_overlay').fadeOut();
+    $('#slr_meter').fadeOut();
+    
+    scroll_check()
 })
+$('.show').click(function(){
+    hideRasterLayer('bird_env');
+    hideRasterLayer('invert_env');
+    hideRasterLayer('fish_env');
+    hideRasterLayer('bird_env_line');
+    hideRasterLayer('invert_env_line');
+    hideRasterLayer('fish_env_line');
+    hideRasterLayer('habitats');
+    hideRasterLayer('habitats_line');
+    $('.show').removeClass('show_active');
+    $(this).addClass('show_active');
+    if (map.getLayer($(`#${this.id}`).attr('alt')).visibility == "none") {
+    showRasterLayer($(`#${this.id}`).attr('alt'));
+    showRasterLayer($(`#${this.id}`).attr('alt')+'_line');
+    } else {
+        hideRasterLayer($(`#${this.id}`).attr('alt'));
+        hideRasterLayer($(`#${this.id}`).attr('alt')+'_line');
+    }
+})
+$('#stickyButtons .button').click(function(){
+    hideRasterLayer('habitats');
+    hideRasterLayer('habitats_line');
+    $(this).toggleClass('button_active');
+    if (map.getLayer($(`#${this.id}`).attr('alt')).visibility == "none") {
+    showRasterLayer($(`#${this.id}`).attr('alt'));
+    showRasterLayer($(`#${this.id}`).attr('alt')+'_line');
+    } else {
+        hideRasterLayer($(`#${this.id}`).attr('alt'));
+        hideRasterLayer($(`#${this.id}`).attr('alt')+'_line');
+    }
+})
+
+$(window).scroll(function() {
+    scroll_check()
+})
+

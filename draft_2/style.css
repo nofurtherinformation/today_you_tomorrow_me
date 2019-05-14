@@ -312,11 +312,9 @@
 
 }
 #gridImg {
-    height:5vh;
     z-index:600;
-    width:10vw;
     position:fixed;
-    transition:150ms all;
+    transition:50ms all;
     pointer-events: none;
 }
 #gridImg h3 {
