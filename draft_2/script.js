@@ -682,6 +682,7 @@ function getGridImg(term){
 };
 
 function scroll_check() { // whenever the page scrolls
+    
     var height = $(window).scrollTop()+300; // current position
     if (($(window).scrollTop()) > ($('#fish_env').offset().top)) {
             $('#stickyButtons').fadeIn();
@@ -698,23 +699,27 @@ function scroll_check() { // whenever the page scrolls
     if (($(window).scrollTop()+300)>getPosition('marker4')){
         $('rect').fadeIn();
     }
+    if (height  > getPosition('marker2')) {
+        $('#pixel_viz p').fadeOut();
+    }
 
     if (height == 300) {
         $('#overlay').css('background-image','url("img/bg.jpg")').fadeIn();
         updateDD('0');
-        // showRasterLayer('habitats');
-        // hideRasterLayer('bird_env');
-        // hideRasterLayer('fish_env');
+        $('#stickyButtons').fadeOut();
         // hideRasterLayer('invert_env');
     } else if ((height  > getPosition('marker1')) && (height  < getPosition('marker2'))) {
         $('#overlay').fadeOut();
         $('rect').fadeOut();
         updateDD('0');
+        $('#pixel_viz p').fadeIn();
         // showRasterLayer('habitats');
         // hideRasterLayer('bird_env');
         // hideRasterLayer('fish_env');
         // hideRasterLayer('invert_env');
     } else if ((height  > getPosition('marker2')) && (height  < getPosition('marker3'))) {
+
+        $('#pixel_viz p').fadeOut();
         showRasterLayer('bird_env');
         showRasterLayer('bird_env_line');
         $('#slr_meter').fadeOut();
@@ -941,4 +946,23 @@ $('#stickyButtons .button').click(function(){
 $(window).scroll(function() {
     scroll_check()
 })
+$('#people_grid').mouseover(function(){
+    $('#dd_0').html(`icon = 20k people`);
+})
+$('#people_grid').mouseout(function(){
+    updateDD(slr_num)
+})
 
+$('#houses_grid').mouseover(function(){
+    $('#dd_1').html(`icon = 20k houses`);
+})
+$('#houses_grid').mouseout(function(){
+    updateDD(slr_num)
+})
+
+$('#value_grid').mouseover(function(){
+    $('#dd_2').html(` icon = 1 billion USD`);
+})
+$('#value_grid').mouseout(function(){
+    updateDD(slr_num)
+})
