@@ -40,7 +40,7 @@ $( document ).on( "mousemove", function( event ) {
     pageY = event.clientY;
   });
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiZGhhbHBlcm4iLCJhIjoiY2pvMnliandsMHJsbTNwcGhlNWhqYzF3ZyJ9.g5FiNV9s5DXPt1RaE2wNyg';
+mapboxgl.accessToken = 'pk.eyJ1IjoiZGhhbHBlcm4iLCJhIjoiY2p2cGxzdWU2MGFmODQ0bzhmcDczNWJxdCJ9.-BtVfS9tGm-t7AIBm1WDNQ';
 
 var map = new mapboxgl.Map({
     container: 'map',
