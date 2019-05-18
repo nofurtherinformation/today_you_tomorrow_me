@@ -413,7 +413,7 @@ function grid(config){
 
 
   // defaults
-  config = Object.assign({size:document.getElementById("pixel_viz").offsetWidth/17, numStates:3, margin:2, outline:'transparent'}, config);
+  config = Object.assign({size:document.getElementById("pixel_viz").offsetWidth/17, numStates:3, margin:2, outline:'#9fbc96'}, config);
   let {nx, ny, size, numStates, init, margin, colorArray, outline} = config;
 
   // validate init: this is horrible...
