@@ -98,8 +98,9 @@ const heatmap_vars = {
             ],
         };
 
-        map.on('load', function() {
+      map.on('load', function() {
       map.setPaintProperty('water', 'fill-color', '#025a72')
+      map.fitBounds([[-94.6,31.4], [-88.6,28.5]])
       slr_tiles.forEach(function(tile){
       // Insert the layer beneath any symbol layer.
           map.addSource(tile.name, {
@@ -530,7 +531,7 @@ function handleMouseOver(){
     map.setFilter('habitats_line', ['==','Louisian_2',pixel_data[this.id].SPECIES]);
     map.setPaintProperty('habitats_line', 'line-opacity', 0.1);
     showRasterLayer('habitats_line');
-    
+
     hideRasterLayer('bird_env');
     hideRasterLayer('invert_env');
     hideRasterLayer('fish_env');
@@ -538,7 +539,7 @@ function handleMouseOver(){
     hideRasterLayer('invert_env_line');
     hideRasterLayer('fish_env_line');
     $('#stickyButtons .button').removeClass('button_active')
-    
+
 }
 function handleMouseOut(){
     $('#gridImg').css('background-image','none');
@@ -564,14 +565,14 @@ $('#left_panel').mouseleave(function(){
 
 })
 function data_icon_grid(num) {
-    
+
     var data = new Array();
     var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
     var ypos = 1;
     var width = $('#human_counter .left_panel_boxes').width()/10;
     var height = $('#human_counter .left_panel_boxes').width()/10;
     var counter= 0 ;
-    // iterate for rows 
+    // iterate for rows
     for (var row = 0; row < num/10; row++) {
         data.push( new Array() );
 
@@ -592,7 +593,7 @@ function data_icon_grid(num) {
         // reset the x position after a row is complete
         xpos = 1;
         // increment the y position for the next row. Move it down 50 (height variable)
-        ypos += height; 
+        ypos += height;
     }
     return data;
 }
@@ -623,8 +624,8 @@ function draw_icon_grid(selector, num){
       .style("fill", d=>d.fill);
     //   .on('mouseover', handleIconMouseover(selector))
     //   .on('mouseout', handleIconMouseout)
-   
-    
+
+
   }
 function getPosition(marker) { // gets the position roughly when the marker enters the frame
     return ($(`#${marker}`).offset().top-760)
@@ -682,7 +683,7 @@ function getGridImg(term){
 };
 
 function scroll_check() { // whenever the page scrolls
-    
+
     var height = $(window).scrollTop()+300; // current position
     if (($(window).scrollTop()) > ($('#fish_env').offset().top)) {
             $('#stickyButtons').fadeIn();
@@ -765,7 +766,7 @@ function scroll_check() { // whenever the page scrolls
         hideRasterLayer('invert_env');
         hideRasterLayer('fish_env_line');
         hideRasterLayer('invert_env_line');
-        
+
         map.setFilter('habitats', ['==','Louisian_2','Piping plover']);
         map.setFilter('habitats_line', ['==','Louisian_2','Piping plover']);
         map.setPaintProperty('habitats_line', 'line-opacity', 0.1);
@@ -883,7 +884,7 @@ function scroll_check() { // whenever the page scrolls
         hideRasterLayer('slr_7')
         hideRasterLayer('slr_10')
         updateGrid(getArray(9));
-        
+
         $('#stickyButtons').css('opacity','1');
         $('#video_overlay').fadeOut().css('opacity','0');
     } else if (height > getPosition('marker14')) {
@@ -896,7 +897,7 @@ function scroll_check() { // whenever the page scrolls
         $('.wave_filler').css('height','90%');
         hideRasterLayer('slr_8')
         updateGrid(getArray(10));
-        
+
         $('#video_overlay').fadeIn().css('opacity','1');
         $('#stickyButtons').css('opacity','0');
     } else {
@@ -908,7 +909,7 @@ $(document).ready(function(){
     $('#stickyButtons').fadeOut();
     $('#video_overlay').fadeOut();
     $('#slr_meter').fadeOut();
-    
+
     scroll_check()
 })
 $('.show').click(function(){
