@@ -1,5 +1,6 @@
     html {
         scroll-behavior: smooth;
+        font-size:1vw;
     }
     body {
         margin:0;
@@ -10,7 +11,7 @@
     }
     h1, h2, h3, h4, h5, h6, div.container {
         font-family: 'Vesper Libre', serif;
-        padding:0 20px;
+        padding:0 1vw;
         background: white;
         box-shadow:0 0 1vw rgba(0,0,0,0.2);
     }
@@ -23,7 +24,7 @@
         margin-bottom:1rem;
     }
     p {
-        padding:20px;
+        padding:1vw;
         background:white;
 
     box-shadow:0 0 1vw rgba(0,0,0,0.2);
@@ -33,18 +34,18 @@
         background:white;
     }
     .title h1 {
-        font-size:40px;
-        padding-top:20px;
+        font-size:2vw;
+        padding-top:1vw;
     }
     .title h1, .title p, .title h3 {
         box-shadow:none;
     }
     .title h3 {
-        padding-bottom: 20px;
+        padding-bottom: 1vw;
     }
     .title h3 span {
-        font-size:30px;
-        padding-right:20px;
+        font-size:1.5vw;
+        padding-right:1vw;
     }
     #map {
         position:fixed;
@@ -61,7 +62,7 @@
       margin:25vh 0 10vh 15vw;
       height:500vh;
       position: relative;
-      padding:20px;
+      padding:1vw;
       text-align:center;
       transition:1s all;
     }
@@ -91,7 +92,7 @@
 
     .left_panel_boxes{
     width: 13vw;
-    font-size:12px;
+    font-size:0.6vw;
     }
     h3.left_panel_boxes {
         background: none;
@@ -102,7 +103,7 @@
         margin-bottom:0;
     }
     #human_counter h3 {
-        margin-bottom:24px;
+        margin-bottom:1.2vw;
     }
 #stats_left{
      width: 85%;
@@ -131,7 +132,7 @@
     padding:1vw;
     width: 10vw;
     position: fixed;
-    font-size: 18px;
+    font-size: 1vw;
 }
 
 #slr_meter {
@@ -164,9 +165,9 @@
     padding:0;
     background:none;
     text-align:center;
-    margin-top: 2px;
+    margin-top: 0.1vw;
     font-family:'Vesper Libre', sans-serif;
-    font-size:12px;
+    font-size:1vw;
     font-weight:bold;
 }
 .wave_filler {
@@ -181,8 +182,8 @@
     background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/85486/wave.svg) repeat-x;
   position: absolute;
   bottom: 0;
-  width: 6400px;
-  height: 300px;
+  width: 300vw;
+  height: 16vw;
   animation: wave 20s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite;
   transform: translate3d(0, 0, 0);
   transition:1s all;
@@ -195,15 +196,15 @@
 }
 .scenarios {
     width:100%;
-    padding:3px;
+    padding:0.15vw;
 }
 .scenarios p {
     width:5vw;
-    margin:0 0.1rem 1rem 0.1rem;
+    margin:0 0.5vw 2vw 0.5vw;
     display: inline;
     font-weight: bold;
     padding:0.5vw;
-    border-radius: 10px;
+    border-radius: 0.5vw;
 
 
 }
@@ -234,7 +235,7 @@
     margin-left: 0;
   }
   100% {
-    margin-left: -1600px;
+    margin-left: -150vw;
   }
 }
 
@@ -250,12 +251,12 @@
     width:5vw;
     height:2vh;
     display:inline;
-    margin:10px;
+    margin:0.5vw;
     background-color:white;
     font-weight: bold;
     text-align: center;
-    padding:15px 20px;
-    border-radius:20px;
+    padding:0.75vw 1vw;
+    border-radius:1vw;
     transition: 250ms all;
     box-shadow:0 0 1vw rgba(0,0,0,0.2);
 }
@@ -302,13 +303,13 @@
     padding:0;
 }*/
 #human_counter h3 span {
-    font-size:20px;
+    font-size:1vw;
     line-height: 0.2;
 }
 #vertical-text {
     height: 100vh;
     text-align: center;
-    letter-spacing:10px;
+    letter-spacing:0.5vw;
     writing-mode: tb-rl;
     transform: rotate(-180deg);
     transform-origin: 0 left;
@@ -317,7 +318,7 @@
     box-shadow: none;
     padding:2%;
     margin:0%;
-    font-size: 20px;
+    font-size: 1vw;
     color: rgba(0,0,0,0.5);
 
 }
@@ -355,5 +356,5 @@
     text-decoration:none;
     color:rgb(165,35,63);
     font-weight:800;
-    font-size:16px;
+    font-size:0.8vw;
 }
