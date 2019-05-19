@@ -383,7 +383,7 @@ function getArray(slr_level){
   for(let row =0; row<rows_num;row++){
     let valueArray = [];
     for(let column =0; column<cols_num;column++){
-     valueArray.push(0);
+     valueArray.push(2);
     }
     values.push(valueArray);
     }
